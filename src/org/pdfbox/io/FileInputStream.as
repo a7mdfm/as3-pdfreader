@@ -3,6 +3,9 @@
 	
 	import flash.utils.ByteArray;
 	
+	/**
+	 * 
+	 */
 	public class FileInputStream extends ByteArray
 	{		
 		public function set data ( ba:ByteArray ):void {
@@ -30,6 +33,13 @@
 			return String.fromCharCode(read());
 		}
 		
+		/**
+		 * 
+		 * @param	ba
+		 * @param	offset
+		 * @param	len
+		 * @return
+		 */
 		public function readMostBytes( ba:ByteArray, offset:int, len:int):int {
 			
 			if (this.bytesAvailable < len ) {

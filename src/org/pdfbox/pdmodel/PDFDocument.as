@@ -17,7 +17,12 @@
 		private var documentCatalog:PDFDocumentCatalog;
 		
 		private var documentInformation:PDFDocumentInformation;
-				
+		
+		/**
+		 * 'private' constructor
+		 * 
+		 * @param	doc  COSDocument object
+		 */
 		public function PDFDocument( doc:COSDocument = null ) 
 		{
 			if ( doc != null ) {
@@ -48,6 +53,11 @@
 			}
 		}
 		
+		/**
+		 * 
+		 * @param	input pdf file byteArray
+		 * @return
+		 */
 		public static function load( input:FileInputStream ):PDFDocument
 		{
 			var parser:PDFParser = new PDFParser( input );
@@ -77,7 +87,11 @@
 		{
 			return document;
 		}
-		
+		/**
+		 * check the pdf file is encrypted
+		 * 
+		 * @return
+		 */
 		public function isEncrypted():Boolean {
 			return document.isEncrypted();
 		}
