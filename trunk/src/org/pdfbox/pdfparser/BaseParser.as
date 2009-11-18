@@ -151,7 +151,12 @@
 		}
 
 		
-		//-----------------------
+		/**
+		 * read one string object
+		 * 
+		 * @param	length
+		 * @return
+		 */
 		
 		protected function readString( length:int = 0 ):String 
 		{
