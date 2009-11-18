@@ -1,0 +1,71 @@
+﻿package test
+{
+	import flash.display.Sprite;
+	import flash.events.Event;
+	
+	import flash.utils.ByteArray;	
+	
+	import org.pdfbox.io.FileInputStream;
+	
+	/**
+	 * ...
+	 * @author DefaultUser (Tools -> Custom Arguments...)
+	 */
+	public class IOTest extends Sprite 
+	{
+		
+		//
+		
+		public function IOTest():void 
+		{
+			if (stage) init();
+			else addEventListener(Event.ADDED_TO_STAGE, init);
+		}
+		
+		private function init(e:Event = null):void 
+		{
+			removeEventListener(Event.ADDED_TO_STAGE, init);
+			// entry point
+			
+			run();
+		}
+		
+		
+		private function run ():void {
+
+			var stream:FileInputStream = new FileInputStream();
+			
+			var s:String = "78 9C A5 90 3D 0F C2 20 10 86 99 6F F3 1F DC 08 03 27 07 B4 E8 6A A2 F5 2B 31 55 E2 62 9C 34 3A 39 E8 E8 AF 97 D2 A6 71 E8 D6 BC C9 BD F7 05 4F 80 D1 24 69 4E 61 E6 99 E6 78 7B 01 63 A3 CF 13 0C 59 9F E7 7D 92 A6 EF 24 CE 05 A3 0B 05 3A 3F 6B DA 79 0D 8F 55 97 A4 D3 8B 08 D3 15 A3 F6 1E E3 03 B2 ED 41 B3 31 18 BF 79 2B DE E1 22 45 50 D6 10 4B B1 53 D6 52 90 62 AF 0A 72 52 9C 95 6E FA D7 B8 85 65 84 FA 0F EA 4B 37 1A DA 43 6C 41 7E 80 51 18 3B 9A 71 EC 1E 54 77 BE 56 DA 39 72 43 B4 50 8E A6 9D 3A 4A 25 36 4A 07 9A 0F 60 4A 3F 1E D3 5E DE 7F E0 A1 B5 B5 62 4B 56 8A 89 32 3D B7 86 1F EE C1 75 83 0A"; 
+			
+			//s = "48 89 7C 94 41 8E 1C 21 0C 45 F7 75 0A 2E D0 8E 6D C0 E0 13 CC 3A CA 11 4A 4A B2 E8 59 8C 72 7F 29 DF 40 D1 35 9A 28 6A A9 CB AF 00 DB 7C DB F5 71 48 62 FC 24 B9 92 98 31 73 49 4D 61 77 D8 C5 D2 F9 7E 7C 7B FB C1 E9 D7 9F 23 F6 BD 1F 0F A6 EC 9E 1E 42 EE 2D 3D 0F 18 BD C9 8D 99 38 D7 64 94 A5 00 85 9A F5 4D 99 0A D6 F6 5E 3C AB DD B1 9A 21 C8 73 84 7A 1E BF F1 A6 68 49 42 82 08 EF 20 91 9E 94 BC E5 B1 9B B3 24 78 F4 9C 98 5C 3C 15 CA AC B0 7B CE B0 BB 95 74 1E 20 96 45 F0 4B 2D 40 71 01 A6 DA 2D 8E 63 81 87 93 70 3C 4E 88 D5 15 F3 F9 29 83 E7 F1 F3 F8 7E 7C 6C C9 84 71 30 24 B3 06 CD 3A 35 65 87 9F 2F 92 71 7A 18 75 19 F7 7A 34 82 02 D0 48 A1 61 27 96 88 CE 35 EC 8A B4 CF D0 53 6B B9 78 E8 9B B3 C7 B9 5E 16 86 DC 2F AC 7D 78 52 C8 FC 50 62 28 08 32 48 03 B2 BC 09 9E 33 F5 FE 5A 2D 54 51 6B 38 52 28 70 51 45 D4 10 E1 E2 28 D8 78 D4 3E 1C 16 19 8F DA CA 45 D8 8B A8 A5 EF 55 54 9C DB 08 0E 59 22 BF A8 78 46 B1 6C DE AE C6 A6 C9 CF 8B EF 35 BF B6 A0 66 1A FD B6 71 76 D9 82 DA A7 6F 0D 28 A6 CB B7 07 72 1D 3B FB 0C 64 70 F3 D0 51 D4 45 23 E5 D6 F4 B6 EA 5E 87 D7 2A 9B 20 05 8E 8C BD 83 8D DA 12 B5 B5 51 C6 78 19 83 B2 69 A4 E0 C8 E5 5A 0D 29 F2 90 78 66 1B 4B 70 E3 B2 B2 8D D7 46 E6 65 5F CC B0 E9 4E 45 6E A2 0D 45 BE 36 21 8A D3 6C CE 2D 5A A9 BB BB FD A3 09 A3 71 3C 0E 21 67 9D 0D 3E 6B 19 80 72 78 9E 77 0D AC 68 C1 91 B1 94 82 D9 55 95 68 D2 7C D9 67 4C 05 6A 3C 29 8E 38 8E 70 6D CB CE 24 B8 D9 79 4C 62 B2 12 FF AE 91 31 3A 3E 9E E7 2E F7 1C 85 08 E5 31 2A 64 5C 17 61 58 CB 70 A9 6D D9 70 8C 31 8F 11 9D E4 E8 F9 79 02 E1 5B 8C 7E C8 30 ED 33 BE 44 96 2F 04 C4 87 68 9E D9 30 DD 2D 44 1B BB C5 5A 75 DF 29 B0 D8 B2 CF 4F A9 7E 2D 03 0A D9 21 7E 2D FF FD 16 BC FA 7D 4F C2 FA 4E AE 39 59 D4 B3 CE 5E B3 A1 80 5F E3 A5 F8 9E DD 66 2F FD 15 60 00 87 79 17 41 0D";
+			
+			//s = "78 DA 7B 36 6D C3 D3 9D 5B 9E EE 5F FD 64 E7 04 45 00 44 76 09 1C";
+			
+			//s = "78 9C 5D D1 CB 6A 84 30 14 00 D0 BD 5F 91 E5 CC 62 88 8F D1 19 41 84 D6 E9 80 8B 3E A8 ED 07 C4 E4 6A 03 35 86 18 17 FE 7D 93 1B DB 45 05 85 83 F7 95 1B DA B4 B7 56 49 4B DF CC CC 3B B0 64 90 4A 18 58 E6 D5 70 20 3D 8C 52 45 49 4A 84 E4 36 28 7C F9 C4 74 44 9B 67 A6 5F D8 04 F4 41 CC 3D 9C 5A 01 CA 4A BB 9D 3E 9B 8E 08 18 5C 40 7B EB B6 C5 C2 D4 AA 61 AE 2A FA EE 72 17 6B B6 03 26 1C E9 AB 11 60 A4 1A 0F 2E E3 48 BB 55 EB 6F 98 5C 11 12 D7 75 28 E0 3A 7C 6C 1A 48 8A 05 93 BD FB 2C 60 D1 8C 83 61 6A 84 A8 8A DD 53 57 71 71 2D EB 08 94 F8 F7 DB 8D 8F 59 FD C0 BF 98 F1 D1 49 E2 A2 E3 F4 A9 F6 C8 2E 1E F9 19 71 46 14 3B AE 88 3C A0 44 14 01 8F 88 6B 40 83 28 03 EE 88 06 91 63 9F 22 F4 C9 53 C4 3D 20 F3 B8 C4 01 05 22 C3 E1 F7 29 FD 31 FC 8E 7F 57 4C F8 6A 8C DB 0C 5E 04 AE C5 2F 44 2A F8 BB 2B 3D 6B E2 B2 FC 1B FD 00 30 2B 8A E9";
+			
+			var arr:Array = s.split(" ");
+			for (var i:int = 0; i < arr.length; i++)
+			{
+				stream.writeByte ( parseInt(arr[i], 16) );
+			}			
+			stream.uncompress();
+			trace(stream);
+			//
+			
+			var ba:ByteArray = new ByteArray();
+			ba.writeUTFBytes("新年快乐!");
+			
+			ba.compress();
+			
+			s = '';
+			for (i = 0; i < ba.length; i++)
+			{
+				var tmp:String = ba[i].toString(16).toUpperCase();
+				s += ((tmp.length == 1)?"0"+tmp:tmp) + " ";
+			}			
+			//trace(s);
+		}		
+		
+	}
+	
+}
