@@ -2,8 +2,10 @@
 {
 	import flash.display.Sprite;
 	import flash.events.Event;
+	import flash.events.IOErrorEvent;
 	import flash.events.MouseEvent;
 	import flash.events.ProgressEvent;
+	import flash.events.SecurityErrorEvent;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
 	import flash.net.URLStream;
@@ -22,7 +24,7 @@
 	import org.pdfbox.pdmodel.common.PDFStream;
 	
 	import org.pdfbox.tools.PDFTextStripper;
-	import org.pdfbox.tools.PDFStreamEngine;
+	//import org.pdfbox.tools.PDFStreamEngine;
 	import org.pdfbox.utils.DateUtil;
 	
 	import org.pdfbox.log.PDFLogger;
@@ -120,10 +122,17 @@
 			if ( file_Loader == null ) {
 				file_Loader = new URLStream();
 				file_Loader.addEventListener(ProgressEvent.PROGRESS, onLoadProcess);
+				file_Loader.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
+				file_Loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadError);
 				file_Loader.addEventListener(Event.COMPLETE, onFileLoaded);
-				
-				file_Loader.load ( new URLRequest (f) );
 			}
+			file_Loader.load ( new URLRequest (f) );
+		}
+		
+		private function onLoadError(e:Event):void
+		{
+			output ( "PDF File load error..." );
+			load_btn.mouseEnabled = true;
 		}
 		
 		private function onLoadProcess(e:ProgressEvent):void 
@@ -135,6 +144,7 @@
 		
 		private function onFileLoaded(e:Event):void 
 		{
+			load_btn.mouseEnabled = true;
 			output ( "PDF File loaded..." );
 			output ( "开始解析文件..." );
 			
@@ -182,7 +192,7 @@
 			
 			//
 			
-			var stripper:PDFStreamEngine = new PDFStreamEngine();
+			//var stripper:PDFStreamEngine = new PDFStreamEngine();
 			/*
 			var output:ByteArray = new ByteArray();
             
