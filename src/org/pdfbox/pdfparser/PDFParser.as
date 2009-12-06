@@ -276,6 +276,7 @@
 				//PDFLogger.log("endkey:" + endObjectKey + ":"+ (endObjectKey ==  "stream"));
 				if( endObjectKey == "stream")
 				{
+					//这里非常重要，解析流内容
 					pdfSource.unreadBytes( ByteUtil.getBytes(endObjectKey) );
 					pdfSource.unreadBytes( ByteUtil.getBytes(' ') );
 					if( pb is COSDictionary )

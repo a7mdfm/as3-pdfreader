@@ -65,6 +65,9 @@
 		
 		public static function DateToString( date:Date, format:String = "Y.M.D h:m:s"):String 
 		{
+			if ( date == null ) {
+				return '';
+			}
 			var year:Number = date.getFullYear();
 			var month:Number = date.getMonth() + 1;
 			var day:Number = date.getDate();

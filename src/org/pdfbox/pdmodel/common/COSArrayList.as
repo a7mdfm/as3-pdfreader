@@ -1,8 +1,11 @@
 package org.pdfbox.pdmodel.common
 {
+	import org.pdfbox.cos.COSNull;
 	import org.pdfbox.cos.COSName;
 	import org.pdfbox.cos.COSBase;
 	import org.pdfbox.cos.COSArray;
+	import org.pdfbox.cos.COSInteger;
+	import org.pdfbox.cos.COSFloat;
 	import org.pdfbox.cos.COSString;
 	import org.pdfbox.cos.COSDictionary;
 	
@@ -75,9 +78,9 @@ package org.pdfbox.pdmodel.common
 		
 		public static function convertIntegerCOSArrayToList():COSArrayList
 		{
-			
+			return null;
 		}
-		public static function converterToCOSArray( cosObjectableList:List ):COSArrayList
+		public static function converterToCOSArray( cosObjectableList:List ):COSArray
 		{
 			var array:COSArray;
 			if( cosObjectableList != null )
@@ -90,32 +93,30 @@ package org.pdfbox.pdmodel.common
 				else
 				{
 					array = new COSArray();
-					Iterator iter = cosObjectableList.iterator();
-					while( iter.hasNext() )
+					var rows:Array = cosObjectableList.toArray();
+					for (var i:int = 0, len:int = rows.length; i < len;i++)
 					{
-						Object next = iter.next();
-						if( next instanceof String )
+						var next:* = rows[i];
+						if( next is String )
 						{
-							array.add( new COSString( (String)next ) );
+							array.add( new COSString(next) );
 						}
-						else if( next instanceof Integer || next instanceof Long )
+						else if( next is int )
 						{
-							array.add( new COSInteger( ((Number)next).longValue() ) );
+							array.add( new COSInteger( next ) );
 						}
-						else if( next instanceof Float || next instanceof Double )
+						else if( next is Number )
 						{
-							array.add( new COSFloat( ((Number)next).floatValue() ) );
+							array.add( new COSFloat( Number(next)) );
 						}
-						else if( next instanceof COSObjectable )
+						else if( next is COSObjectable )
 						{
-							COSObjectable object = (COSObjectable)next;
-							array.add( object.getCOSObject() );
+							array.add( (next as COSObjectable).getCOSObject() );
 						}
-						else if( next instanceof DualCOSObjectable )
+						else if( next is DualCOSObjectable )
 						{
-							DualCOSObjectable object = (DualCOSObjectable)next;
-							array.add( object.getFirstCOSObject() );
-							array.add( object.getSecondCOSObject() );
+							array.add( (next as DualCOSObjectable).getFirstCOSObject() );
+							array.add( (next as DualCOSObjectable).getSecondCOSObject() );
 						}
 						else if( next == null )
 						{
