@@ -17,6 +17,9 @@
 		 */ 
 		public static function formatToDate( value:String ):Date
 		{
+			if ( value == null ) {
+				return null;
+			}
 			var date:Date = new Date();
 			
 			var tmp:Array = value.split(":");

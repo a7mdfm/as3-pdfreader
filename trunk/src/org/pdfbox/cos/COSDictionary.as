@@ -454,6 +454,9 @@ public class COSDictionary extends COSBase
 		}
 		
 		var date:COSString = getDictionaryObject( _key ) as COSString;
+		if ( date == null ) {
+			return defaultValue;
+		}
         var retval:Date = DateUtil.formatToDate(date.getString());
 		//retval.setMilliseconds( Date.parse( date.getString() ) );
         if( retval == null )

@@ -120,7 +120,7 @@ package org.pdfbox.cos
 			if( unFilteredStream == null )
 			{
 				doDecode();
-			}
+			}			
 			return unFilteredStream;
 	    }
 
@@ -145,10 +145,12 @@ package org.pdfbox.cos
 			}else {
 				filters = filterName;	
 			}
+			trace("filters:" + filters);
 			if( filters == null )
 			{
 				//there is no filter to apply
-			}
+				unFilteredStream = this.filteredStream;
+			}			
 			else if( filters is COSName )
 			{
 				$doDecode( filters as COSName );
@@ -157,12 +159,14 @@ package org.pdfbox.cos
 			{
 				// apply filters in reverse order
 				var  filterArray:COSArray = filters as COSArray;
-				for( var i:int=filterArray.size()-1; i>=0; i-- )
+				for ( var i:int = 0,len:int = filterArray.size(); i < len; i++ )
 				{
 					var filterName:COSName = filterArray.get( i ) as COSName;
+					trace(filterName+":"+unFilteredStream);
 					$doDecode( filterName );
+					trace("--------:"+unFilteredStream);
 				}
-			}
+			}			
 	    }
 		private function $doDecode( filterName:COSName ):void
 		{

@@ -24,7 +24,7 @@
 	import org.pdfbox.pdmodel.common.PDFStream;
 	
 	import org.pdfbox.tools.PDFTextStripper;
-	//import org.pdfbox.tools.PDFStreamEngine;
+	import org.pdfbox.tools.PDFStreamEngine;
 	import org.pdfbox.utils.DateUtil;
 	
 	import org.pdfbox.log.PDFLogger;
@@ -173,7 +173,7 @@
 			
 			PDFLogger.log( "作者：" + info.getAuthor() );
 			PDFLogger.log( "标题：" + info.getTitle() );
-			PDFLogger.log( "工具：" + info.getCreator() + ", "+info.getProducer());
+			PDFLogger.log( "工具：" + info.getCreator() + ", " + info.getProducer());
 			PDFLogger.log( "创建日期：" + DateUtil.DateToString(info.getCreationDate()) );		
 			PDFLogger.log( "是否加密：" + (document.isEncrypted() == true?'是':'否') );	
 			PDFLogger.log( "关键字：" + info.getKeywords() );	
@@ -182,25 +182,32 @@
 		
 		private function printPageInfo():void {
 			var pages:Array = document.getDocumentCatalog().getAllPages();
-			PDFLogger.log("页数:" + pages.length);
+			PDFLogger.log("页数:" + pages.length);			
 			
-			for (var i:int = 0; i < pages.length; i++) {
+			var len:int = pages.length;
+			//len = 1;
+			for (var i:int = 0; i < len; i++) {
 				var page:PDFPage = pages[i] as PDFPage;
 				var stream:PDFStream = page.getContents();
-				PDFLogger.log ("Page " + (i+1) + ": " + stream.getByteArray());
+				var bytes:ByteArray = stream.getByteArray();
+				PDFLogger.log ("Page " + (i + 1) + ": " + bytes+":"+bytes.length);
+				var pdfStreamEngine:PDFStreamEngine = new PDFStreamEngine();
+				pdfStreamEngine.processStream(page, null, stream.getStream());
 			}
 			
-			//
 			
-			//var stripper:PDFStreamEngine = new PDFStreamEngine();
+			//
 			/*
+			var stripper:PDFTextStripper = new PDFTextStripper();
+			
 			var output:ByteArray = new ByteArray();
             
-            //stripper.setSortByPosition( sort );
+            stripper.setSortByPosition( sort );
 			stripper.setStartPage( 1 );
             stripper.setEndPage( 1 );
             stripper.writeText( document, output );
 			*/
+			
 		}
 		
 		private function output ( s:String ):void

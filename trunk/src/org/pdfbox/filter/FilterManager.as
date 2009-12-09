@@ -22,10 +22,11 @@ package org.pdfbox.filter
 			//var ccittFaxFilter:Filter = new CCITTFaxDecodeFilter();
 			//var lzwFilter:Filter = new LZWFilter();
 			//var asciiHexFilter:Filter = new ASCIIHexFilter();
-			//var ascii85Filter:Filter = new ASCII85Filter();
+			var ascii85Filter:Filter = new ASCII85Filter();
 			//var runLengthFilter:Filter = new RunLengthDecodeFilter();
 
 			addFilter( COSName.FLATE_DECODE, flateFilter );
+			addFilter( COSName.ASCII85_DECODE, ascii85Filter );
 			//addFilter( COSName.FLATE_DECODE_ABBREVIATION, flateFilter );
 			/*
 			addFilter( COSName.DCT_DECODE, dctFilter );

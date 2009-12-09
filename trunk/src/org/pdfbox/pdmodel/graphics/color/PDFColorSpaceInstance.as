@@ -12,16 +12,20 @@ package org.pdfbox.pdmodel.graphics.color
 	 */
 	public class PDFColorSpaceInstance
 	{
-	    private var colorSpace:PDFColorSpace = new PDDeviceGray();
+	    private var colorSpace:PDFColorSpace = new PDFDeviceGray();
 	    private var colorSpaceValue:COSArray = new COSArray();
 	    
 	    /**
 	     * Default constructor.
 	     *
 	     */
-	    public function PDFColorSpaceInstance()
+	    public function PDFColorSpaceInstance( csValues:COSArray = null )
 	    {
 			colorSpaceValue.add( new COSFloat( 0 ) );
+			
+			if ( csValues ) {
+				colorSpaceValue = csValues;
+			}
 	    }
 	    
 	    /**
@@ -29,7 +33,8 @@ package org.pdfbox.pdmodel.graphics.color
 	     * @return The current awt color.
 	     * @throws IOException If there is an error creating the color.
 	     */
-	    public Color createColor():
+	    
+		/*public Color createColor():
 	    {
 			Color retval = null;
 			float[] components = colorSpaceValue.toFloatArray();
@@ -47,25 +52,15 @@ package org.pdfbox.pdmodel.graphics.color
 				retval = new Color( cs, components, 1f );
 			}
 			return retval;
-	    }
+	    }*/
 	    
-	    /**
-	     * Constructor with an existing color set.  Default colorspace is PDDeviceGray.
-	     * 
-	     * @param csValues The color space values.
-	     */
-	    public PDColorSpaceInstance( COSArray csValues )
-	    {
-			colorSpaceValue = csValues;
-	    }
-
 
 	    /**
 	     * This will get the current colorspace.
 	     *
 	     * @return The current colorspace.
 	     */
-	    public PDColorSpace getColorSpace()
+	    public function getColorSpace():PDFColorSpace
 	    {
 			return colorSpace;
 	    }
@@ -75,7 +70,7 @@ package org.pdfbox.pdmodel.graphics.color
 	     *
 	     * @param value The new colorspace.
 	     */
-	    public void setColorSpace(PDColorSpace value)
+	    public function setColorSpace(value:PDFColorSpace):void
 	    {
 			colorSpace = value;
 	    }
@@ -85,7 +80,7 @@ package org.pdfbox.pdmodel.graphics.color
 	     *
 	     * @return The colorspace values.
 	     */
-	    public float[] getColorSpaceValue()
+	    public function getColorSpaceValue():Array
 	    {
 			return colorSpaceValue.toFloatArray();
 	    }
@@ -95,7 +90,7 @@ package org.pdfbox.pdmodel.graphics.color
 	     *
 	     * @return The colorspace values.
 	     */
-	    public COSArray getCOSColorSpaceValue()
+	    public function getCOSColorSpaceValue():COSArray
 	    {
 			return colorSpaceValue;
 	    }
@@ -105,7 +100,7 @@ package org.pdfbox.pdmodel.graphics.color
 	     *
 	     * @param value The new colorspace values.
 	     */
-	    public void setColorSpaceValue(float[] value)
+	    public function setColorSpaceValue(value:Array):void
 	    {
 			colorSpaceValue.setFloatArray( value );
 	    }

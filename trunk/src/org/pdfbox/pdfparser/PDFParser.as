@@ -14,6 +14,9 @@
 	
 	import org.pdfbox.log.PDFLogger;
 	
+	/**
+	 * PDF解析主类
+	 */
 	public class PDFParser extends BaseParser
 	{
 		
@@ -26,13 +29,16 @@
 			super(source);
 		}
 		
+		/**
+		 * PDF解析入口，所有的动作都从这里开始
+		 */
 		public function parse():void
 		{
 			document = new COSDocument();
 			
+			//解析文件头信息
 			var header:String = readLine();		
 			document.setHeaderString( header );
-			//PDFLogger.log( "Header>>"+header );
 			
 			if( header.length < PDF_HEADER.length+1 )
             {
@@ -46,14 +52,14 @@
                 //trim off any leading characters
                 header = header.substring( headerStart, header.length );
             }
-
+			//文件使用的PDF版本
             var pdfVersion:String = header.substring(PDF_HEADER.length, Math.min( header.length, PDF_HEADER.length + 3)  );			
             document.setVersion( parseFloat(pdfVersion) );
 			//PDFLogger.log( "PDF Version>>" + pdfVersion );
 			
 			skipHeaderFillBytes();
 
-			// start parse object
+			// 开始解析对象
 			///*
 			var nextObject:Object;
             var wasLastParsedObjectAnXref:Boolean = false;
@@ -101,22 +107,22 @@
 		protected function readLine():String
 		{
 			var c:int= pdfSource.read();
-			while(isWhitespace(c) && c != -1)
+			while(isWhitespace(c) && !isNaN(c))
 			{
 				c = pdfSource.read();
 			}
 			var out:Array= new Array();
 			
-			while( !isEOL(c) && c != -1)
+			while( !isEOL(c) && !isNaN(c))
 			{
 				out.push( String.fromCharCode( c ));
 				c = pdfSource.read();
 			}
-			while( isEOL(c) && c != -1)
+			while( isEOL(c) && !isNaN(c))
 			{
 				c = pdfSource.read();
 			}
-			if (c != -1)
+			if (!isNaN(c))
 			{
 				pdfSource.unread(c);
 			}
@@ -155,9 +161,9 @@
 				//"Skipping because of EOF" );
 				//end of file we will return a null object
 			}else if ( peekedChar == 'x' || peekedChar == 't' ||	peekedChar == 's')
-			{
+			{				
 				// x -- xref    t -- trailer    s -- startxref
-				//PDFLogger.log ("parseObject() parsing xref" );
+				//PDFLogger.log ("parseObject() parsing xref:"+this.pdfSource.position+":"+this.pdfSource.length );
 
 				//FDF documents do not always have the xref
 				if( peekedChar == 'x' || peekedChar == 't' )
@@ -214,9 +220,12 @@
 											String.fromCharCode(data[i+1]) == 'O' &&
 											String.fromCharCode(data[i+2]) == 'F' );
 						}
+						//trace("atEndOfFile:"+atEndOfFile+":"+pdfSource.position);
 						if( atEndOfFile )
 						{
-							pdfSource.readBytes( data, 0, data.length )
+							//trace("atEndOfFile:" + pdfSource.position+":"+pdfSource.length);
+							//pdfSource.position = 0;
+							pdfSource.readMostBytes( data, 0, data.length );
 							//while( pdfSource.readBytes( data, 0, data.length ) != -1 )							
 							//{
 								//read until done.
@@ -276,7 +285,7 @@
 				//PDFLogger.log("endkey:" + endObjectKey + ":"+ (endObjectKey ==  "stream"));
 				if( endObjectKey == "stream")
 				{
-					//这里非常重要，解析流内容
+					//这里非常重要，遇到stream对象后，回流字节，创建CosStream对象，处理流
 					pdfSource.unreadBytes( ByteUtil.getBytes(endObjectKey) );
 					pdfSource.unreadBytes( ByteUtil.getBytes(' ') );
 					if( pb is COSDictionary )

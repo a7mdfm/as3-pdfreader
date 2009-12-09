@@ -2,6 +2,7 @@ package org.pdfbox.tools
 {
 	import flash.geom.Matrix;	
 	import flash.utils.ByteArray;
+	import org.pdfbox.utils.ArrayList;
 		
 	import org.pdfbox.cos.COSObject;
 	import org.pdfbox.cos.COSStream;
@@ -10,7 +11,7 @@ package org.pdfbox.tools
 	
 	import org.pdfbox.pdmodel.PDFResources;
 	
-	//import org.pdfbox.pdmodel.font.PDFont;
+	import org.pdfbox.pdmodel.font.PDFont;
 	import org.pdfbox.pdmodel.graphics.PDFGraphicsState;
 	import org.pdfbox.utils.PDFOperator;
 	
@@ -56,7 +57,7 @@ package org.pdfbox.tools
 		{
 			if ( properties != null ) {
 				
-				for ( var prop in properties ) {
+				for ( var prop:* in properties ) {
 					var cls:Class = properties[prop] as Class
 					if ( cls ) {
 						var op:OperatorProcessor = new cls() as OperatorProcessor;
@@ -137,6 +138,7 @@ package org.pdfbox.tools
 			{
 				var arguments:Array = new Array();
 				var tokens:Array = cosStream.getStreamTokens();
+				//trace("tokens:" + tokens);
 				if( tokens != null )
 				{
 					for ( var i:int = 0, len:int = tokens.length; i < len; i++)
@@ -149,7 +151,7 @@ package org.pdfbox.tools
 						else if( next is PDFOperator )
 						{
 							processOperator( next as PDFOperator, arguments );
-							arguments = new []();
+							arguments = new Array();
 						}
 						else
 						{
@@ -187,6 +189,7 @@ package org.pdfbox.tools
 		 *
 		 * @throws IOException If there is an error showing the string
 		 */
+		/*
 		public function showString( string:ByteArray ) :void
 		{
 			var spaceWidth:Number = 0;
@@ -215,7 +218,7 @@ package org.pdfbox.tools
 
 			var initialMatrix:Matrix = new Matrix();
 			//TODO
-			/*
+			
 			initialMatrix.setValue(0,0,1);
 			initialMatrix.setValue(0,1,0);
 			initialMatrix.setValue(0,2,0);
@@ -225,7 +228,7 @@ package org.pdfbox.tools
 			initialMatrix.setValue(2,0,0);
 			initialMatrix.setValue(2,1,rise);
 			initialMatrix.setValue(2,2,1);
-			*/
+			
 
 			//this
 			var codeLength:int = 1;
@@ -359,7 +362,7 @@ package org.pdfbox.tools
 						font,
 						fontSize,
 						wordSpacingDisplacement ));
-		}
+		}*/
 		
 		/**
 		 * This is used to handle an operation.
@@ -386,7 +389,7 @@ package org.pdfbox.tools
 		protected function processOperator( operator:PDFOperator, arguments:Array ) :void
 		{
 			var operation:String = operator.getOperation();
-			var processor:OperatorProcessor = (operators as OperatorProcessor).get( operation );
+			var processor:OperatorProcessor = operators.get( operation ) as OperatorProcessor;
 			if( processor != null )
 			{
 				processor.process( operator, arguments );
@@ -519,6 +522,7 @@ package org.pdfbox.tools
 		}
 	}
 }
+import org.pdfbox.pdmodel.PDFResources;
 import org.pdfbox.utils.HashMap;
 
 /**
