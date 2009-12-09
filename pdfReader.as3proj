@@ -4,7 +4,7 @@
   <output>
     <movie disabled="False" />
     <movie input="" />
-    <movie path="bin/Demo_Text.swf" />
+    <movie path="bin\Demo_Text.swf" />
     <movie fps="30" />
     <movie width="480" />
     <movie height="380" />

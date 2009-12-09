@@ -2,8 +2,7 @@
 {
 	
 	/**
-	 * ...
-	 * @author ...
+	 * 接口，用来clone对象
 	 */
 	public interface ICloneable 
 	{

@@ -22,6 +22,7 @@ package org.pdfbox.pdmodel.common
 	 * A PDStream represents a stream in a PDF document.  Streams are tied to a single
 	 * PDF document.
 	 */
+
 	public class PDFStream implements COSObjectable
 	{
 		private var stream:COSStream;
@@ -424,6 +425,7 @@ package org.pdfbox.pdmodel.common
 			try
 			{
 				var input:ByteArray = createInputStream();
+				input.position = 0;
 				input.readBytes(output);
 				/*var amountRead:int = -1;
 				while( (amountRead = input.read( buf )) != -1)

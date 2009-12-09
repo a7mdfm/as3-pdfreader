@@ -40,7 +40,7 @@ package org.pdfbox.pdmodel.graphics
 	     *
 	    public PDLineDashPattern( COSArray ldp = null )
 	    {
-		lineDashPattern = ldp;
+			lineDashPattern = ldp;
 	    }
 	    
 	    /**
@@ -51,9 +51,9 @@ package org.pdfbox.pdmodel.graphics
 	     *
 	    public PDLineDashPattern( COSArray ldp, int phase )
 	    {
-		lineDashPattern = new COSArray();
-		lineDashPattern.add( ldp );
-		lineDashPattern.add( new COSInteger( phase ) );
+			lineDashPattern = new COSArray();
+			lineDashPattern.add( ldp );
+			lineDashPattern.add( new COSInteger( phase ) );
 	    }
 	    */
 

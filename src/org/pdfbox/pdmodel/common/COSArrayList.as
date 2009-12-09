@@ -76,7 +76,7 @@ package org.pdfbox.pdmodel.common
 			return retval;
 		}
 		
-		public static function convertIntegerCOSArrayToList():COSArrayList
+		public static function convertIntegerCOSArrayToList( obj:* ):COSArrayList
 		{
 			return null;
 		}

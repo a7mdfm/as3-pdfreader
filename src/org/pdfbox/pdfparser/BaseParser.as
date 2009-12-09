@@ -23,6 +23,9 @@
 	
 	import flash.utils.ByteArray;
 	
+	/**
+	 * PDF解析器基类，集中了所有基本对象的解析方法。 
+	 */
 	public class BaseParser 
 	{
 		
@@ -48,6 +51,7 @@
 				pdfSource = new FileInputStream();
 				pdfSource.data = source;
 			}
+			pdfSource.position = 0;
 		}
 		
 		protected function isHexDigit(ch:String):Boolean
@@ -73,7 +77,7 @@
 		protected function isEndOfName(ch:String):Boolean{
 			return (ch == ' ' || ch.charCodeAt(0) == 13|| ch.charCodeAt(0) == 10|| ch.charCodeAt(0) == 9|| ch == '>' || ch == '<'
             || ch == '[' || ch =='/' || ch ==']' || ch ==')' || ch =='(' ||
-            ch.charCodeAt(0) == -1//EOF
+            ch == String.fromCharCode(0)//EOF
             );
 		}
 		protected function isClosing(c:int):Boolean{
@@ -85,7 +89,10 @@
 			if (pdfSource.isEOF()) {
 				return;
 			}
-			var c:int= pdfSource.read();
+			var c:int = pdfSource.read();
+			if ( isNaN(c) ) {
+				return;
+			}
 			// identical to, but faster as: isWhiteSpace(c) || c == 37
 			while(c == 0|| c == 9|| c == 12|| c == 10|| c == 13|| c == 32|| c == 37)		//37 is the % character
 			{
@@ -93,7 +100,7 @@
 				{
 					// skip past the comment section
 					c = pdfSource.read();
-					while(!isEOL(c) && c != -1)
+					while(!isEOL(c) && !isNaN(c))
 					{
 						c = pdfSource.read();
 					}
@@ -103,23 +110,28 @@
 					c = pdfSource.read();
 				}
 			}
-			if (c != -1)
+			if (!isNaN(c))
 			{
 				pdfSource.unread(c);
 			}			
 		}
-		
+		/**
+		 * 读取一串预设的字符串
+		 * 
+		 * @param	theString
+		 * @return
+		 */
 		protected function readExpectedString( theString:String ):String
 		{
 			var c:int = pdfSource.read();
 			// != -1 ---  it could work now,but i think i need to remove it in some day,may be...
-			while( isWhitespace(c) && c != -1)
+			while( isWhitespace(c) && !isNaN(c))
 			{
 				c = pdfSource.read();
 			}
 			var buffer:Array = new Array( theString.length );
 			var charsRead:int = 0;
-			while( !isEOL(c) && c != -1 && charsRead < theString.length )
+			while( !isEOL(c) && !isNaN(c) && charsRead < theString.length )
 			{
 				var next:String = String.fromCharCode(c);
 				buffer.push( next );
@@ -134,16 +146,16 @@
 				}
 				c = pdfSource.read();
 			}
-			while( isEOL(c) && c != -1 )
+			while( isEOL(c) && !isNaN(c) )
 			{
 				try{
 					c = pdfSource.read();
 				}catch (e:Error) {
-					c = -1;
+					c = NaN;
 					break;
 				}
 			}
-			if (c != -1)
+			if (!isNaN(c))
 			{
 				pdfSource.unread(c);
 			}
@@ -165,27 +177,31 @@
 			var c:int = pdfSource.read();
 			
 			if ( length == 0 ){
-				while( !isEndOfName(String.fromCharCode(c)) && !isClosing(c) && c != -1)
+				while( !isEndOfName(String.fromCharCode(c)) && !isClosing(c) && !isNaN(c))
 				{
 					buffer.push( String.fromCharCode(c));
 					c = pdfSource.read();
 				}
 			}else {
 				var tmp:String = String.fromCharCode(c);
-				while ( !isWhitespace(c) && !isClosing(c) && c != -1 && buffer.length < length && tmp != '[' &&	tmp != '<' &&	tmp != '(' &&				tmp != '/' )
+				while ( !isWhitespace(c) && !isClosing(c) && !isNaN(c) && buffer.length < length && tmp != '[' &&	tmp != '<' &&	tmp != '(' &&				tmp != '/' )
 				{
 					buffer.push( String.fromCharCode(c));
 					c = pdfSource.read();
 					tmp = String.fromCharCode(c);
 				}
 			}
-			if (c != -1)
+			if (!isNaN(c))
 			{
 				pdfSource.unread(c);
 			}
 			return buffer.join("");
 		}
-	
+		/**
+		 * 读一个整数
+		 * 
+		 * @return
+		 */
 		protected function readInt():int
 		{
 			skipSpaces();
@@ -197,7 +213,7 @@
 			lastByte != 10&&
 			lastByte != 13&&
 			lastByte != 0&& 
-			lastByte != -1)
+			!isNaN(lastByte))
 			{
 				intBuffer.push( String.fromCharCode(lastByte ));
 			}
@@ -213,6 +229,9 @@
 
 			skipSpaces();
 			var nextByte:int = pdfSource.peek();
+			if ( isNaN(nextByte) ) {
+				return null;
+			}
 			var c:String = String.fromCharCode(nextByte);
 			
 			//PDFLogger.log("parseDirObject>>" + nextByte + ":" + c);
@@ -311,7 +330,7 @@
 							ic = pdfSource.read();
 							c = String.fromCharCode(ic);
 						}
-						if( ic != -1 )
+						if( !isNaN(ic) )
 						{
 							pdfSource.unread( ic );
 						}
@@ -341,6 +360,13 @@
 			return retval;
 		}
 		
+		/**
+		 * 解析读取一个stream流
+		 * stream流的格式为 stream .... endstream
+		 * 
+		 * @param	dic
+		 * @return
+		 */
 		protected function parseCOSStream( dic:COSDictionary ) :COSStream
 		{
 			var stream:COSStream = new COSStream( dic );
@@ -449,11 +475,17 @@
 						throw ("expected='endstream' actual='" + endStream + "' " + pdfSource);
 					}
 				}
-			//}
+			//}			
+			//trace(stream.getUnfilteredStream());
 
 			return stream;
 		}
 		
+		/**
+		 * 读取stream流，值得遇到endstream字符串
+		 * 
+		 * @param	out
+		 */
 		private function readUntilEndStream( out:ByteArray ) :void
 		{
 			//PDFLogger.log("readUnitilEndStream:" + pdfSource.peek() );
@@ -486,6 +518,7 @@
 		}
 		
 		/**
+		 * 不断比较字符串，直到遇到目标
 		 * This basically checks to see if the next compareTo.length bytes of the
 		 * buffer match the compareTo byte array.
 		 */		
@@ -678,7 +711,7 @@
 						case 13:
 							//this is a break in the line so ignore it and the newline and continue
 							c = pdfSource.read();
-							while( isEOL(c) && c != -1)
+							while( isEOL(c) && !isNaN(c))
 							{
 								c = pdfSource.read();
 							}
@@ -758,7 +791,7 @@
 					c = pdfSource.read();
 				}
 			}//end while
-			if (c != -1)
+			if (!isNaN(c))
 			{
 				pdfSource.unread(c);
 			}
@@ -810,7 +843,7 @@
 			// costruisce il nome
 			var buffer:Array = new Array();
 			c = pdfSource.read();
-			while( c != -1 )
+			while( !isNaN(c))
 			{
 				var ch:String = String.fromCharCode(c);				
 				if(ch == '#')
@@ -850,7 +883,7 @@
 					c = pdfSource.read();
 				}
 			}//End while
-			if (c != -1)
+			if (!isNaN(c))
 			{
 				pdfSource.unread(c);
 			}

@@ -20,14 +20,14 @@
 		//Here are some attributes of the Graphics state, but have not been created yet.
 		//
 		//clippingPath
-		//private PDColorSpaceInstance strokingColorSpace = new PDColorSpaceInstance();
-		//private PDColorSpaceInstance nonStrokingColorSpace = new PDColorSpaceInstance();
+		private var strokingColorSpace:PDFColorSpaceInstance = new PDFColorSpaceInstance();
+		private var nonStrokingColorSpace:PDFColorSpaceInstance = new PDFColorSpaceInstance();
 		private var textState:PDFTextState = new PDFTextState();
 		private var lineWidth:Number = 0;
 		private var lineCap:int = 0;
 		private var lineJoin:int = 0;
 		private var miterLimit:Number = 0;
-		private var lineDashPattern:PDLineDashPattern;
+		private var lineDashPattern:PDFLineDashPattern;
 		private var renderingIntent:String;
 		private var strokeAdjustment:Boolean = false;
 		//blend mode
@@ -80,7 +80,7 @@
 		 *
 		 * @param value The current line width.
 		 */
-		public function setLineWidth(value:Number)
+		public function setLineWidth(value:Number):void
 		{
 			lineWidth = value;
 		}
@@ -354,7 +354,7 @@
 		{
 			var clone:PDFGraphicsState = new PDFGraphicsState;
 
-			clone.setTextState( textState.clone() );
+			clone.setTextState( textState.clone() as PDFTextState );
 			clone.setCurrentTransformationMatrix( currentTransformationMatrix.clone() );
 
 			return clone;

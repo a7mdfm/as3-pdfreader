@@ -12,9 +12,11 @@ package org.pdfbox.pdfparser
 	import org.pdfbox.cos.COSObject;
 	import org.pdfbox.cos.COSStream;
 
-	//import org.pdfbox.pdmodel.common.PDStream;
+	//import org.pdfbox.pdmodel.common.PDFStream;
 	import org.pdfbox.utils.PDFOperator;
 	import org.pdfbox.utils.ImageParameters;
+	
+	import org.pdfbox.log.PDFLogger;
 	
 	import org.pdfbox.utils.ArrayList;
 
@@ -83,13 +85,14 @@ package org.pdfbox.pdfparser
 		private function parseNextToken():Object
 		{
 			var retval:Object = null;
-
-			skipSpaces();
+						
 			var nextByte:int = pdfSource.peek();
-			if( nextByte == -1 )
+			if( isNaN(nextByte) )
 			{
 				return null;
 			}
+			skipSpaces();
+			
 			var c:String = String.fromCharCode(nextByte);
 			var next:String;
 			

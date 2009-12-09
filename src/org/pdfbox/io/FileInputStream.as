@@ -15,22 +15,33 @@
 			this.position = 0;
 		}
 		
+		/**
+		 * get the next byte and don't move the position
+		 * @return
+		 */
 		public function peek():int
 		{
-			var result:int = this.readByte();
-			if( result != -1 )
-			{
-				unread( result );
+			if ( !this.bytesAvailable ) {
+				return NaN;
 			}
+			var result:int = this.readByte();			
+			unread( result );
 			return result;
 		}
 		
 		public function read():int {
+			if ( !this.bytesAvailable ) {
+				return NaN;
+			}
 			return this.readByte();
 		}
 		
 		public function readChar():String {
-			return String.fromCharCode(read());
+			var i:int = read();
+			if ( isNaN(i) ) {
+				return null;
+			}
+			return String.fromCharCode(i);
 		}
 		
 		/**
@@ -42,6 +53,9 @@
 		 */
 		public function readMostBytes( ba:ByteArray, offset:int, len:int):int {
 			
+			if ( this.bytesAvailable < 1 ) {
+				return -1;
+			}
 			if (this.bytesAvailable < len ) {
 				len = this.bytesAvailable;
 				
