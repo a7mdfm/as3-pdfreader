@@ -23,7 +23,11 @@
 			public function clear():void
 			{
 				_props = new Dictionary(true);
-				_keys = new Array();
+				if ( _keys != null ) {
+					_keys.length = 0;
+				}else {
+					_keys = new Array();
+				}
 			}
 			
 			public function containsKey(key:Object):Boolean

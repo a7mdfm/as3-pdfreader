@@ -6,9 +6,10 @@
 	import flash.events.MouseEvent;
 	import flash.events.ProgressEvent;
 	import flash.events.SecurityErrorEvent;
+	import flash.net.URLLoader;
+	import flash.net.URLLoaderDataFormat;
 	import flash.text.TextField;
 	import flash.text.TextFormat;
-	import flash.net.URLStream;
 	import flash.net.URLRequest;	
 	
 	import flash.utils.ByteArray;
@@ -42,7 +43,7 @@
 		private var load_btn:Button;
 		
 		//load file in binary format 		
-		private var file_Loader:URLStream;
+		private var file_loader:URLLoader;
 		
 		// PDFDocument,the root object
 		private var document:PDFDocument;
@@ -87,7 +88,7 @@
 			file_txt.borderColor = 0x808888;
 			file_txt.x = 88;
 			file_txt.y = 10;
-			file_txt.text = "test.pdf";
+			file_txt.text = "simple1.pdf";
 			addChild(file_txt);
 			
 			output_txt = new TextField();
@@ -119,14 +120,15 @@
 			load_btn.mouseEnabled = false;
 			//
 			
-			if ( file_Loader == null ) {
-				file_Loader = new URLStream();
-				file_Loader.addEventListener(ProgressEvent.PROGRESS, onLoadProcess);
-				file_Loader.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
-				file_Loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadError);
-				file_Loader.addEventListener(Event.COMPLETE, onFileLoaded);
+			if ( file_loader == null ) {
+				file_loader = new URLLoader();
+				file_loader.dataFormat = URLLoaderDataFormat.BINARY;
+				file_loader.addEventListener(ProgressEvent.PROGRESS, onLoadProcess);
+				file_loader.addEventListener(IOErrorEvent.IO_ERROR, onLoadError);
+				file_loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, onLoadError);
+				file_loader.addEventListener(Event.COMPLETE, onFileLoaded);
 			}
-			file_Loader.load ( new URLRequest (f) );
+			file_loader.load ( new URLRequest (f) );
 		}
 		
 		private function onLoadError(e:Event):void
@@ -149,13 +151,24 @@
 			output ( "开始解析文件..." );
 			
 			//read bytes
-			var stream:ByteArray = new ByteArray();			
-			file_Loader.readBytes(stream);
-			//
 			var file:FileInputStream = new FileInputStream();
-			file.data = stream;
+			file.data = file_loader.data as ByteArray;
 			// create document
 			document = PDFDocument.load( file );
+			
+			/*
+			 * PDF文件的版本较多，最新的版本功能很多。由于PDF文件中的对象是紧密联系在一起的，彼此相互依赖，一旦遇到无法识别的对象，程序可能会陷入死循环。
+			 * 
+			 * 如果现在SWF没有crash，也没有抛出异常，那恭喜了，已成功解析完整个该死的PDF文件。			 
+			 *  
+			 * 所谓的成功解析是按照预定格式，读明白了所有的数据，并转换为程序语言中的对象。
+			 * 接下来的工作，就是顺藤摸瓜，按照逻辑关系，把这些对象串联起来，并提取出其中的内容，比如文本、图片。
+			 * 
+			 * 不过到现在已经可以长舒一口气了，可以说，万里长征已经走到了近4/5处，前面依然很艰险
+			 * 
+			 * Let's Go!
+			 * 
+			 */
 			
 			output ( "解析完成，下面输出文件的基本信息： ");
 			output ( "++++++++++++++++++++++++++++++++++++++ ");
@@ -181,31 +194,34 @@
 		}
 		
 		private function printPageInfo():void {
-			var pages:Array = document.getDocumentCatalog().getAllPages();
+			
+			// PDFDocumentCatalog对象包括文件的目录信息和页面信息 
+
+			var fileCatalog:PDFDocumentCatalog = document.getDocumentCatalog();
+			
+			var pages:Array = fileCatalog.getAllPages();
 			PDFLogger.log("页数:" + pages.length);			
 			
 			var len:int = pages.length;
-			//len = 1;
+			len = 1;
 			for (var i:int = 0; i < len; i++) {
 				var page:PDFPage = pages[i] as PDFPage;
 				var stream:PDFStream = page.getContents();
 				var bytes:ByteArray = stream.getByteArray();
-				PDFLogger.log ("Page " + (i + 1) + ": " + bytes+":"+bytes.length);
-				var pdfStreamEngine:PDFStreamEngine = new PDFStreamEngine();
-				pdfStreamEngine.processStream(page, null, stream.getStream());
+				PDFLogger.log ("Page " + (i + 1) + " : " + bytes);
+				//var pdfStreamEngine:PDFStreamEngine = new PDFStreamEngine();
+				//pdfStreamEngine.processStream(page, null, stream.getStream());
 			}
 			
 			
 			//
 			/*
 			var stripper:PDFTextStripper = new PDFTextStripper();
-			
 			var output:ByteArray = new ByteArray();
-            
-            stripper.setSortByPosition( sort );
+			stripper.setSortByPosition( sort );
 			stripper.setStartPage( 1 );
-            stripper.setEndPage( 1 );
-            stripper.writeText( document, output );
+			stripper.setEndPage( 1 );
+			stripper.writeText( document, output );
 			*/
 			
 		}

@@ -7,7 +7,7 @@
 	 * 
 	 */
 	public class FileInputStream extends ByteArray
-	{		
+	{	
 		public function set data ( ba:ByteArray ):void {
 			
 			this.position = 0;
@@ -42,6 +42,10 @@
 				return null;
 			}
 			return String.fromCharCode(i);
+		}
+		
+		public function reset():void {
+			this.length = 0;
 		}
 		
 		/**

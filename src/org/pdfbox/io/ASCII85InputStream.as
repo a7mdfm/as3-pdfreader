@@ -55,7 +55,7 @@ package org.pdfbox.io {
 			{
 				if(eof)
 				{
-					return -1;
+					return NaN;
 				}
 				index = 0;
 				do
@@ -64,17 +64,17 @@ package org.pdfbox.io {
 					if( isNaN(zz))
 					{
 						eof=true;
-						return -1;
+						return NaN;
 					}
 					z = String.fromCharCode(zz);
-				}  while( z=='\n' || z=='\r' || z==' ');
-
+				}  while ( z == '\n' || z == '\r' || z == ' ');
+				
 				if (z == '~' || z=='x')
 				{
 					eof=true;
 					ascii=b=null;
 					n = 0;
-					return -1;
+					return NaN;
 				}
 				else if (z == 'z')
 				{
@@ -83,7 +83,7 @@ package org.pdfbox.io {
 				}
 				else
 				{
-					ascii[0]=z; // may be EOF here....
+					ascii[0]=z.charCodeAt(0); // may be EOF here....
 					for (k=1;k<5;++k)
 					{
 						do
@@ -92,11 +92,11 @@ package org.pdfbox.io {
 							if(isNaN(zz))
 							{
 								eof=true;
-								return -1;
+								return NaN;
 							}
 							z=String.fromCharCode(zz);
 						} while ( z=='\n' || z=='\r' || z==' ' );
-						ascii[k]=z;
+						ascii[k]=z.charCodeAt(0);
 						if (z == '~' || z=='x')
 						{
 							break;
@@ -108,7 +108,7 @@ package org.pdfbox.io {
 						eof = true;
 						ascii = null;
 						b = null;
-						return -1;
+						return NaN;
 					}
 					if ( k < 5 )
 					{
@@ -156,7 +156,8 @@ package org.pdfbox.io {
 		 * @throws IOException If there is an error reading data from the underlying stream.
 		 */
 		public final function readto(data:ByteArray, offset:int, len:int):int
-		{
+		{			
+			//如果已经到尾部且index == n
 			if(eof && index>=n)
 			{
 				return -1;

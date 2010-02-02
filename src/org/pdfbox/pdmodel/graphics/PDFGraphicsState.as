@@ -1,8 +1,7 @@
 ﻿package org.pdfbox.pdmodel.graphics
 {
-
-	import flash.geom.Matrix;
 	import org.pdfbox.utils.ICloneable;
+	import org.pdfbox.utils.Matrix2;
 
 	import org.pdfbox.pdmodel.text.PDFTextState;
 	
@@ -15,7 +14,7 @@
 	 */
 	public class PDFGraphicsState implements ICloneable
 	{
-		private var currentTransformationMatrix:Matrix = new Matrix();
+		private var currentTransformationMatrix:Matrix2 = new Matrix2();
 
 		//Here are some attributes of the Graphics state, but have not been created yet.
 		//
@@ -50,7 +49,7 @@
 		 *
 		 * @return The current transformation matrix.
 		 */
-		public function getCurrentTransformationMatrix():Matrix
+		public function getCurrentTransformationMatrix():Matrix2
 		{
 			return currentTransformationMatrix;
 		}
@@ -60,7 +59,7 @@
 		 *
 		 * @param value The current transformation matrix.
 		 */
-		public function setCurrentTransformationMatrix(value:Matrix):void
+		public function setCurrentTransformationMatrix(value:Matrix2):void
 		{
 			currentTransformationMatrix = value;
 		}
@@ -355,7 +354,7 @@
 			var clone:PDFGraphicsState = new PDFGraphicsState;
 
 			clone.setTextState( textState.clone() as PDFTextState );
-			clone.setCurrentTransformationMatrix( currentTransformationMatrix.clone() );
+			clone.setCurrentTransformationMatrix( currentTransformationMatrix.clone() as Matrix2 );
 
 			return clone;
 		}
