@@ -170,6 +170,28 @@ public class COSDictionary extends COSBase
         }
         return retval;
     }
+	
+	/**
+     * This will set an item in the dictionary.
+     *
+     * @param key The key to the dictionary object.
+     * @param value The value to the dictionary object.
+     */
+    /*public function setBoolean( key:String, value:Boolean ):void
+    {
+        setItem( COSName.getPDFName( key ), COSBoolean.getBoolean( value ) );
+    }*/
+
+    /**
+     * This will set an item in the dictionary.
+     *
+     * @param key The key to the dictionary object.
+     * @param value The value to the dictionary object.
+     */
+    public function setBoolean( key:COSName, value:Boolean ):void
+    {
+        setItem( key , COSBoolean.getBoolean( value ) );
+    }
 
     /**
      * This will set an item in the dictionary.  If value is null then the result
@@ -305,7 +327,28 @@ public class COSDictionary extends COSBase
             dic.setItem( key, value );
         }
     }
-        
+	
+	/*
+	public void setInt( String key, int value )
+    {
+        setInt( COSName.getPDFName( key ), value );
+    }
+	*/
+
+    /**
+     * This is a convenience method that will convert the value to a COSInteger
+     * object.
+     *
+     * @param key The key to the object,
+     * @param value The int value for the name.
+     */
+    public function setInt( key:COSName, value:int ):void
+    {
+        var intVal:COSInteger = null;
+        intVal = new COSInteger(value);
+        setItem( key, intVal );
+    }
+	        
     /**
      * This is a convenience method that will convert the value to a COSInteger
      * object.  

@@ -26,8 +26,10 @@ package org.pdfbox.filter
 			//var runLengthFilter:Filter = new RunLengthDecodeFilter();
 
 			addFilter( COSName.FLATE_DECODE, flateFilter );
+			addFilter( COSName.FLATE_DECODE_ABBREVIATION, flateFilter );
 			addFilter( COSName.ASCII85_DECODE, ascii85Filter );
-			//addFilter( COSName.FLATE_DECODE_ABBREVIATION, flateFilter );
+			addFilter( COSName.ASCII85_DECODE_ABBREVIATION, ascii85Filter );
+			
 			/*
 			addFilter( COSName.DCT_DECODE, dctFilter );
 			addFilter( COSName.DCT_DECODE_ABBREVIATION, dctFilter );
@@ -83,9 +85,11 @@ package org.pdfbox.filter
 				filterName = _filterName as COSName;
 			}
 			var filter:Filter = filters.get( filterName ) as Filter;
+			
 			if( filter == null )
 			{
-				throw ( "Unknown stream filter:" + filterName );
+				//编码暂时不支持
+				throw new Error( "sorry," + filterName +  " not supported now" );
 			}
 
 			return filter;

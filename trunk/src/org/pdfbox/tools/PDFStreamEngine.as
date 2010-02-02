@@ -1,8 +1,14 @@
 package org.pdfbox.tools
-{
-	import flash.geom.Matrix;	
+{	
 	import flash.utils.ByteArray;
+	import flash.utils.getDefinitionByName;
+	
+	import org.pdfbox.pdmodel.common.PDFMatrix;
 	import org.pdfbox.utils.ArrayList;
+	import org.pdfbox.utils.Stack;
+	import org.pdfbox.utils.Matrix2;
+	import org.pdfbox.utils.HashMap;
+	import org.pdfbox.utils.TextPosition;
 		
 	import org.pdfbox.cos.COSObject;
 	import org.pdfbox.cos.COSStream;
@@ -16,9 +22,29 @@ package org.pdfbox.tools
 	import org.pdfbox.utils.PDFOperator;
 	
 	import org.pdfbox.operator.OperatorProcessor;
-	
-	import org.pdfbox.utils.HashMap;
-	import org.pdfbox.utils.Stack;
+	import org.pdfbox.operator.BeginText;
+	import org.pdfbox.operator.Concatenate;
+	import org.pdfbox.operator.EndText;
+	import org.pdfbox.operator.GRestore;
+	import org.pdfbox.operator.GSave;
+	import org.pdfbox.operator.Invoke;
+	import org.pdfbox.operator.MoveAndShow;
+	import org.pdfbox.operator.MoveText;
+	import org.pdfbox.operator.MoveTextSetLeading;
+	import org.pdfbox.operator.NextLine;
+	import org.pdfbox.operator.SetCharSpacing;
+	import org.pdfbox.operator.SetGraphicsStateParameters;
+	import org.pdfbox.operator.SetHorizontalTextScaling;
+	import org.pdfbox.operator.SetLineWidth;
+	import org.pdfbox.operator.SetMatrix;
+	import org.pdfbox.operator.SetMoveAndShow;
+	import org.pdfbox.operator.SetTextFont;
+	import org.pdfbox.operator.SetTextLeading;
+	import org.pdfbox.operator.SetTextRenderingMode;
+	import org.pdfbox.operator.SetTextRise;
+	import org.pdfbox.operator.SetWordSpacing;
+	import org.pdfbox.operator.ShowText;
+	import org.pdfbox.operator.ShowTextGlyph;
 
 	/**
 	 * This class will run through a PDF content stream and execute certain operations
@@ -27,12 +53,13 @@ package org.pdfbox.tools
 	 */
 	public class PDFStreamEngine
 	{
-		private static var SPACE_BYTES:Array = [ 32 ];
+		private static var SPACE_BYTES:ByteArray = new ByteArray(); 
+		SPACE_BYTES.writeByte(32);
 
 		private var graphicsState:PDFGraphicsState = null;
 
-		private var textMatrix:Matrix = null;
-		private var textLineMatrix:Matrix = null;
+		private var textMatrix:Matrix2 = null;
+		private var textLineMatrix:Matrix2 = null;
 		private var graphicsStack:Stack = new Stack();
 		private var resources:PDFResources = null;
 		
@@ -45,6 +72,7 @@ package org.pdfbox.tools
 		private var documentFontCache:HashMap = new HashMap();
 		
 		
+		
 		/**
 		 * Constructor with engine properties.  The property keys are all
 		 * PDF operators, the values are class names used to execute those
@@ -55,12 +83,40 @@ package org.pdfbox.tools
 		 */
 		public function PDFStreamEngine( properties:Object = null ):void
 		{
-			if ( properties != null ) {
+			///*
+			var props:Object = new Object();
+			props['BT'] = new BeginText();
+			props['cm'] = new Concatenate();
+			props['Do'] = new Invoke();
+			props['ET'] = new EndText();
+			props['gs'] = new SetGraphicsStateParameters();
+			props['q'] = new GSave();
+			props['Q'] = new GRestore();
+			props['T*'] = new NextLine();
+			props['Tc'] = new SetCharSpacing();
+			props['Td'] = new MoveText();
+			props['TD'] = new MoveTextSetLeading();
+			props['Tf'] = new SetTextFont();
+			props['Tj'] = new ShowText();
+			props['TJ'] = new ShowTextGlyph();
+			props['TL'] = new SetTextLeading();
+			props['Tm'] = new SetMatrix();
+			props['Tr'] = new SetTextRenderingMode();
+			props['Ts'] = new SetTextRise();
+			props['Tw'] = new SetWordSpacing();
+			props['Tz'] = new SetHorizontalTextScaling();
+			props['w'] = new SetLineWidth();
+			props['\'']= new MoveAndShow();
+			props['\"']= new SetMoveAndShow();		
+			//*/
+			if ( props != null ) {
 				
-				for ( var prop:* in properties ) {
-					var cls:Class = properties[prop] as Class
-					if ( cls ) {
+				for ( var prop:* in props ) {
+					var op:OperatorProcessor = props[prop] as OperatorProcessor;
+					//trace(op);
+					if ( op ) {
 						var op:OperatorProcessor = new cls() as OperatorProcessor;
+						//trace('op');
 						registerOperatorProcessor(prop, op);
 					}
 				}
@@ -103,10 +159,10 @@ package org.pdfbox.tools
 		 */
 		public function processStream( aPage:PDFPage, resources:PDFResources,  cosStream:COSStream ):void
 		{
-			//graphicsState = new PDGraphicsState();
+			graphicsState = new PDFGraphicsState();
 			textMatrix = null;
 			textLineMatrix = null;
-			//graphicsStack.clear();
+			graphicsStack.clear();
 			streamResourcesStack.clear();
 			
 			processSubStream( aPage, resources, cosStream );
@@ -176,10 +232,10 @@ package org.pdfbox.tools
 		 *
 		 * @param text The character to be displayed.
 		 */
-		/*protected function showCharacter( text:TextPosition ):void
+		protected function showCharacter( text:TextPosition ):void
 		{
 			//subclasses can override to provide specific functionality.
-		}*/
+		}
 
 		/**
 		 * You should override this method if you want to perform an action when a
@@ -189,7 +245,7 @@ package org.pdfbox.tools
 		 *
 		 * @throws IOException If there is an error showing the string
 		 */
-		/*
+		
 		public function showString( string:ByteArray ) :void
 		{
 			var spaceWidth:Number = 0;
@@ -199,13 +255,13 @@ package org.pdfbox.tools
 			var characterHorizontalDisplacement:Number = 0;
 			var characterVerticalDisplacement:Number = 0;
 			var spaceDisplacement:Number = 0;
-			//var fontSize:Number = graphicsState.getTextState().getFontSize();			
+			var fontSize:Number = graphicsState.getTextState().getFontSize();			
 			//100f
-			//var horizontalScaling:Number = graphicsState.getTextState().getHorizontalScalingPercent()/0x100f;
-			//var verticalScaling:Number = horizontalScaling;//not sure if this is right but what else to do???
-			//var rise:Number = graphicsState.getTextState().getRise();
-			//var wordSpacing:Number = graphicsState.getTextState().getWordSpacing();
-			//var characterSpacing:Number = graphicsState.getTextState().getCharacterSpacing();
+			var horizontalScaling:Number = graphicsState.getTextState().getHorizontalScalingPercent()/0x100f;
+			var verticalScaling:Number = horizontalScaling;//not sure if this is right but what else to do???
+			var rise:Number = graphicsState.getTextState().getRise();
+			var wordSpacing:Number = graphicsState.getTextState().getWordSpacing();
+			var characterSpacing:Number = graphicsState.getTextState().getCharacterSpacing();
 			
 			var wordSpacingDisplacement:Number = 0;
 			
@@ -214,9 +270,10 @@ package org.pdfbox.tools
 			//This will typically be 1000 but in the case of a type3 font
 			//this might be a different number
 			var glyphSpaceToTextSpaceFactor:Number = 1/font.getFontMatrix().getValue( 0, 0 );
-			//var averageWidth:Number = font.getAverageFontWidth();
+			var averageWidth:Number = font.getAverageFontWidth();
 
-			var initialMatrix:Matrix = new Matrix();
+			
+			var initialMatrix:Matrix2 = new Matrix2();
 			//TODO
 			
 			initialMatrix.setValue(0,0,1);
@@ -232,7 +289,7 @@ package org.pdfbox.tools
 
 			//this
 			var codeLength:int = 1;
-			var ctm:Matrix = graphicsState.getCurrentTransformationMatrix();
+			var ctm:Matrix2 = graphicsState.getCurrentTransformationMatrix();
 			
 			//lets see what the space displacement should be
 			spaceDisplacement = (font.getFontWidth( SPACE_BYTES, 0, 1 )/glyphSpaceToTextSpaceFactor);
@@ -244,7 +301,7 @@ package org.pdfbox.tools
 				spaceDisplacement *= .80;
 			}
 			var pageRotation:int = page.findRotation();
-			var trm:Matrix = initialMatrix.multiply( textMatrix ).multiply( ctm );
+			var trm:Matrix2 = initialMatrix.multiply( textMatrix ).multiply( ctm );
 			var x:Number = trm.getValue(2,0);
 			var y:Number = trm.getValue(2,1);
 			if( pageRotation == 0 )
@@ -327,7 +384,7 @@ package org.pdfbox.tools
 			var yPos:Number = trm.getYPosition();
 			spaceWidth = spaceDisplacement * xScale * fontSize;
 			wordSpacingDisplacement = wordSpacing*xScale * fontSize;
-			var td:Matrix = new Matrix();
+			var td:Matrix2 = new Matrix2();
 			td.setValue( 2, 0, tx );
 			td.setValue( 2, 1, ty );            
 			
@@ -362,7 +419,7 @@ package org.pdfbox.tools
 						font,
 						fontSize,
 						wordSpacingDisplacement ));
-		}*/
+		}
 		
 		/**
 		 * This is used to handle an operation.
@@ -372,11 +429,11 @@ package org.pdfbox.tools
 		 *
 		 * @throws IOException If there is an error processing the operation.
 		 */
-		/*public void processOperator( operation:String, List arguments ) throws IOException
+		public function $processOperator( operation:String, arguments:Array ):void
 		{
-			PDFOperator oper = PDFOperator.getOperator( operation );
+			var oper:PDFOperator = PDFOperator.getOperator( operation );
 			processOperator( oper, arguments );
-		}*/
+		}
 
 		/**
 		 * This is used to handle an operation.
@@ -386,7 +443,7 @@ package org.pdfbox.tools
 		 *
 		 * @throws IOException If there is an error processing the operation.
 		 */
-		protected function processOperator( operator:PDFOperator, arguments:Array ) :void
+		public function processOperator( operator:Object, arguments:Array ) :void
 		{
 			var operation:String = operator.getOperation();
 			var processor:OperatorProcessor = operators.get( operation ) as OperatorProcessor;
@@ -422,84 +479,84 @@ package org.pdfbox.tools
 		/**
 		 * @return Returns the fonts.
 		 */
-		/*public Map getFonts() 
+		public function getFonts():HashMap 
 		{
-			return ((StreamResources) streamResourcesStack.peek()).fonts;
-		}*/
+			return (streamResourcesStack.peek() as StreamResources).fonts;
+		}
 		/**
 		 * @param value The fonts to set.
 		 */
-		/*public function setFonts(Map value):void
+		public function setFonts(value:HashMap):void
 		{
-			((StreamResources) streamResourcesStack.peek()).fonts = value;
-		}*/
+			( streamResourcesStack.peek() as StreamResources).fonts = value;
+		}
 		/**
 		 * @return Returns the graphicsStack.
 		 */
-		/*public Stack getGraphicsStack() 
+		public function getGraphicsStack():Stack
 		{
 			return graphicsStack;
-		}*/
+		}
 		/**
 		 * @param value The graphicsStack to set.
 		 */
-		/*public void setGraphicsStack(Stack value) 
+		public function setGraphicsStack(value:Stack):void
 		{
 			graphicsStack = value;
-		}*/
+		}
 		/**
 		 * @return Returns the graphicsState.
 		 */
-		/*public PDGraphicsState getGraphicsState() 
+		public function getGraphicsState():PDFGraphicsState
 		{
 			return graphicsState;
-		}*/
+		}
 		/**
 		 * @param value The graphicsState to set.
 		 */
-		/*public void setGraphicsState(PDGraphicsState value) 
+		public function setGraphicsState(value:PDFGraphicsState):void
 		{
 			graphicsState = value;
-		}*/
+		}
 		/**
 		 * @return Returns the graphicsStates.
 		 */
-		/*public Map getGraphicsStates() 
+		public function getGraphicsStates():HashMap 
 		{
-			return ((StreamResources) streamResourcesStack.peek()).graphicsStates;
-		}*/
+			return (streamResourcesStack.peek() as StreamResources).graphicsStates;
+		}
 		/**
 		 * @param value The graphicsStates to set.
 		 */
-		/*public function setGraphicsStates(Map value) 
+		public function setGraphicsStates(value:HashMap) 
 		{
-			((StreamResources) streamResourcesStack.peek()).graphicsStates = value;
-		}*/
+			(streamResourcesStack.peek() as StreamResources).graphicsStates = value;
+		}
 		/**
 		 * @return Returns the textLineMatrix.
 		 */
-		public function getTextLineMatrix():Matrix
+		public function getTextLineMatrix():Matrix2
 		{
 			return textLineMatrix;
 		}
 		/**
 		 * @param value The textLineMatrix to set.
 		 */
-		public function setTextLineMatrix(value:Matrix):void
+		public function setTextLineMatrix(value:Matrix2 = null):void
 		{
 			textLineMatrix = value;
 		}
 		/**
 		 * @return Returns the textMatrix.
 		 */
-		public function getTextMatrix():Matrix 
+		public function getTextMatrix():Matrix2 
 		{
 			return textMatrix;
 		}
 		/**
 		 * @param value The textMatrix to set.
 		 */
-		public function setTextMatrix( value:Matrix ):void
+		public function setTextMatrix( value:Matrix2 = null ):void
 		{
 			textMatrix = value;
 		}

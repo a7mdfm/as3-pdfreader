@@ -24,6 +24,16 @@ package org.pdfbox.cos
 	     * The stream with no filters, this contains the useful data.
 	     */
 	    public var unFilteredStream:ByteArray;
+		
+		/**
+		 * cache the filter stream 
+		 */
+		private var cachefilteredStream:ByteArray;
+		
+		/**
+		 * cache the filter stream 
+		 */
+		private var cacheUnfilteredStream:ByteArray;
 
 	    /**
 	     * Constructor.
@@ -145,7 +155,6 @@ package org.pdfbox.cos
 			}else {
 				filters = filterName;	
 			}
-			trace("filters:" + filters);
 			if( filters == null )
 			{
 				//there is no filter to apply
@@ -157,24 +166,35 @@ package org.pdfbox.cos
 			}
 			else if( filters is COSArray )
 			{
-				// apply filters in reverse order
+				// 如果使用了多种编码方式，则要保存解码中的数据
 				var  filterArray:COSArray = filters as COSArray;
 				for ( var i:int = 0,len:int = filterArray.size(); i < len; i++ )
 				{
 					var filterName:COSName = filterArray.get( i ) as COSName;
-					trace(filterName+":"+unFilteredStream);
+					//trace(filterName+":"+unFilteredStream);
 					$doDecode( filterName );
-					trace("--------:"+unFilteredStream);
+					//trace("--------:"+unFilteredStream);
 				}
-			}			
+			}
+			
+			cachefilteredStream = null;
 	    }
 		private function $doDecode( filterName:COSName ):void
 		{
 			var manager:FilterManager = getFilterManager();
 			var filter:Filter = manager.getFilter( filterName );
 			
+			if ( filter == null ) {
+				
+			}
+			
 			unFilteredStream = new ByteArray();
-			filter.decode( filteredStream, unFilteredStream, null );			
+			if ( cachefilteredStream == null ) {
+				cachefilteredStream = filteredStream;
+			}
+			filter.decode( cachefilteredStream, unFilteredStream, null );
+			
+			cachefilteredStream = unFilteredStream;
 		}
 
 	    /**
