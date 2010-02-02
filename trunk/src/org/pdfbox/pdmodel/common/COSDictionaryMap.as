@@ -8,6 +8,8 @@ package org.pdfbox.pdmodel.common
 	import org.pdfbox.cos.COSInteger;
 	import org.pdfbox.cos.COSName;
 	import org.pdfbox.cos.COSString;
+	
+	import org.pdfbox.utils.Map;
 
 
 
@@ -19,8 +21,8 @@ package org.pdfbox.pdmodel.common
 	 */
 	public class COSDictionaryMap implements Map
 	{
-	    private COSDictionary map;
-	    private Map actuals;
+	    private var map:COSDictionary;
+	    private var actuals:Map;
 
 	    /**
 	     * Constructor for this map.
@@ -28,62 +30,62 @@ package org.pdfbox.pdmodel.common
 	     * @param actualsMap The map with standard java objects as values.
 	     * @param dicMap The map with COSBase objects as values.
 	     */
-	    public COSDictionaryMap( Map actualsMap, COSDictionary dicMap )
+	    public function COSDictionaryMap( Map actualsMap, COSDictionary dicMap )
 	    {
-		actuals = actualsMap;
-		map = dicMap;
+			actuals = actualsMap;
+			map = dicMap;
 	    }
 
 
 	    /**
 	     * {@inheritDoc}
 	     */
-	    public int size()
+	    public function size():uint
 	    {
-		return map.size();
+			return map.size();
 	    }
 
 	    /**
 	     * {@inheritDoc}
 	     */
-	    public boolean isEmpty()
+	    public function isEmpty():Boolean
 	    {
-		return size() == 0;
+			return size() == 0;
 	    }
 
 	    /**
 	     * {@inheritDoc}
 	     */
-	    public boolean containsKey(Object key)
+	    public function containsKey(key:Object):Boolean
 	    {
-		return map.keyList().contains( key );
+			return map.keyList().contains( key );
 	    }
 
 	    /**
 	     * {@inheritDoc}
 	     */
-	    public boolean containsValue(Object value)
+	    public function containsValue(value:Object):Boolean
 	    {
-		return actuals.containsValue( value );
+			return actuals.containsValue( value );
 	    }
 
 	    /**
 	     * {@inheritDoc}
 	     */
-	    public Object get(Object key)
+	    public function get(key:Object):Object
 	    {
-		return actuals.get( key );
+			return actuals.get( key );
 	    }
 
 	    /**
 	     * {@inheritDoc}
 	     */
-	    public Object put(Object key, Object value)
+	    public function put(Object key, Object value):Object
 	    {
-		COSObjectable object = (COSObjectable)value;
+			COSObjectable object = (COSObjectable)value;
 
-		map.setItem( COSName.getPDFName( (String)key ), object.getCOSObject() );
-		return actuals.put( key, value );
+			map.setItem( COSName.getPDFName( (String)key ), object.getCOSObject() );
+			return actuals.put( key, value );
 	    }
 
 	    /**
@@ -91,80 +93,32 @@ package org.pdfbox.pdmodel.common
 	     */
 	    public Object remove(Object key)
 	    {
-		map.removeItem( COSName.getPDFName( (String)key ) );
-		return actuals.remove( key );
+			map.removeItem( COSName.getPDFName( (String)key ) );
+			return actuals.remove( key );
 	    }
 
 	    /**
 	     * {@inheritDoc}
 	     */
-	    public void putAll(Map t)
+	    public function clear():void
 	    {
-		throw new RuntimeException( "Not yet implemented" );
+			map.clear();
+			actuals.clear();
 	    }
-
-	    /**
-	     * {@inheritDoc}
-	     */
-	    public void clear()
-	    {
-		map.clear();
-		actuals.clear();
-	    }
-
-	    /**
-	     * {@inheritDoc}
-	     */
-	    public Set keySet()
-	    {
-		return actuals.keySet();
-	    }
-
-	    /**
-	     * {@inheritDoc}
-	     */
-	    public Collection values()
-	    {
-		return actuals.values();
-	    }
-
-	    /**
-	     * {@inheritDoc}
-	     */
-	    public Set entrySet()
-	    {
-		throw new RuntimeException( "Not yet implemented" );
-	    }
-
 	    /**
 	     * {@inheritDoc}
 	     */
 	    public boolean equals(Object o)
 	    {
-		boolean retval = false;
-		if( o instanceof COSDictionaryMap )
-		{
-		    COSDictionaryMap other = (COSDictionaryMap)o;
-		    retval = other.map.equals( this.map );
-		}
-		return retval;
+			boolean retval = false;
+			if( o instanceof COSDictionaryMap )
+			{
+				COSDictionaryMap other = (COSDictionaryMap)o;
+				retval = other.map.equals( this.map );
+			}
+			return retval;
 	    }
 
-	    /**
-	     * {@inheritDoc}
-	     */
-	    public String toString()
-	    {
-		return actuals.toString();
-	    }
-
-	    /**
-	     * {@inheritDoc}
-	     */
-	    public int hashCode()
-	    {
-		return map.hashCode();
-	    }
 
 	    /**
 	     * This will take a map&lt;java.lang.String,org.pdfbox.pdmodel.COSObjectable&gt;
