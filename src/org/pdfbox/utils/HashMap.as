@@ -10,7 +10,7 @@
 	 */ 
 	import flash.utils.Dictionary;
 	
-	public class HashMap{
+	public class HashMap implements Map{
 			
 			private var _keys:Array;
 			

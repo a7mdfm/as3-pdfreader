@@ -3,6 +3,7 @@ package org.pdfbox.pdmodel
 
 
 	import org.pdfbox.utils.HashMap;
+	import org.pdfbox.utils.Map;
 
 	import org.pdfbox.cos.COSBase;
 	import org.pdfbox.cos.COSDictionary;
@@ -66,9 +67,9 @@ package org.pdfbox.pdmodel
 		 *
 		 * @throws IOException If there is an error getting the fonts.
 		 *
-		public function getFonts( fontCache:HashMap = null ):HashMap
+		public function getFonts( fontCache:HashMap = null ):Map
 		{
-			var retval:HashMap = null;
+			var retval:Map = null;
 			var fonts:COSDictionary = resources.getDictionaryObject( COSName.FONT ) as COSDictionary;
 
 			if( fonts == null )
@@ -79,11 +80,11 @@ package org.pdfbox.pdmodel
 
 			var actuals:HashMap = new HashMap();
 			retval = new COSDictionaryMap( actuals, fonts );
-			Iterator fontNames = fonts.keyList().iterator();
-			while( fontNames.hasNext() )
+			var fontNames:Array = fonts.keyList();
+			for ( var i:int = 0, len:int = fontNames.length; i < len;i++ )
 			{
-				var COSName fontName = (COSName)fontNames.next();
-				var COSBase font = fonts.getDictionaryObject( fontName );
+				var  fontName:COSName= fontNames.next() as COSName;
+				var  font:COSBase = fonts.getDictionaryObject( fontName );
 				//data-000174.pdf contains a font that is a COSArray, looks to be an error in the
 				//PDF, we will just ignore entries that are not dictionaries.
 				if( font is COSDictionary )
