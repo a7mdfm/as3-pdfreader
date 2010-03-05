@@ -152,12 +152,7 @@ package org.pdfbox.pdmodel
 		{
 			page.setItem( COSName.B, COSArrayList.converterToCOSArray( beads ) );
 		}
-		
-		public function setParent( parent:PDFPageNode ):void
-		{
-			page.setItem( COSName.PARENT, parent.getDictionary() );
-		}
-		
+				
 		public function getMediaBox():PDFRectangle
 		{
 			var retval:PDFRectangle = null;

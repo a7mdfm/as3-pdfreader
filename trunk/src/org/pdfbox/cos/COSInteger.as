@@ -30,7 +30,7 @@ package org.pdfbox.cos
 		/**
 		 * {@inheritDoc}
 		 */
-		public function equals( o:Object ):Boolean
+		override public function equals( o:Object ):Boolean
 		{
 			return o is COSInteger && (o as COSInteger).intValue() == intValue();
 		}

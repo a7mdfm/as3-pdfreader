@@ -7,6 +7,8 @@ package org.pdfbox.tools
 	import org.pdfbox.cos.COSStream;
 	
 	import org.pdfbox.utils.List;
+	import org.pdfbox.utils.HashMap;
+	import org.pdfbox.utils.ArrayList;
 	import org.pdfbox.utils.TextPosition;
 	import org.pdfbox.utils.TextPositionComparator;
 
@@ -16,8 +18,8 @@ package org.pdfbox.tools
 	import org.pdfbox.pdmodel.common.PDFRectangle;
 	import org.pdfbox.pdmodel.common.PDFStream;
 
-	//import org.pdfbox.pdmodel.interactive.documentnavigation.outline.PDFOutlineItem;
-	//import org.pdfbox.pdmodel.interactive.pagenavigation.PDThreadBead;
+	import org.pdfbox.pdmodel.interactive.documentnavigation.outline.PDFOutlineItem;
+	import org.pdfbox.pdmodel.interactive.pagenavigation.PDFThreadBead;
 
 
 	/**
@@ -28,17 +30,17 @@ package org.pdfbox.tools
 	{   
 		private var currentPageNo:int = 0;
 		private var startPage:int = 1;
-		private var endPage:int = Number.MAX_VALUE;
+		private var endPage:int;
 		//private var startBookmark:PDFOutlineItem = null;
 		private var startBookmarkPageNumber:int = -1;
 		//private var endBookmark:PDFOutlineItem = null;
 		private var endBookmarkPageNumber:int = -1;
 		private var document:PDFDocument;
 		private var suppressDuplicateOverlappingText:Boolean = true;
-		private var shouldSeparateByBeads:Boolean = true;
+		private var _shouldSeparateByBeads:Boolean = true;
 		private var sortByPosition:Boolean = false;
 		//TODO
-		private var pageArticles:Array = null;
+		private var pageArticles:List = null;
 		/**
 		 * The charactersByArticle is used to extract text by article divisions.  For example
 		 * a PDF that has two columns like a newspaper, we want to extract the first column and
@@ -125,7 +127,7 @@ package org.pdfbox.tools
 				//
 				try
 				{
-					document.decrypt("");
+					//document.decrypt("");
 				}
 				catch ( e:Error )
 				{
@@ -228,7 +230,7 @@ package org.pdfbox.tools
 				(startBookmarkPageNumber == -1 || currentPageNo >= startBookmarkPageNumber ) && 
 				(endBookmarkPageNumber == -1 || currentPageNo <= endBookmarkPageNumber ))
 			{
-				startPage( page );
+				doStartPage( page );
 				pageArticles = page.getThreadBeads();
 				var numberOfArticleSections:int = 1 + pageArticles.size() * 2;
 				if( !shouldSeparateByBeads )
@@ -251,8 +253,8 @@ package org.pdfbox.tools
 				
 				characterListMapping.clear();
 				processStream( page, page.findResources(), content );
-				flushText();
-				endPage( page );
+				//flushText();
+				doEndPage( page );
 			}
 			
 		}
@@ -287,7 +289,7 @@ package org.pdfbox.tools
 		 * 
 		 * @throws IOException If there is any error writing to the stream.
 		 */
-		protected function startPage( page:PDFPage ) :void
+		protected function doStartPage( page:PDFPage ) :void
 		{
 			//default is to do nothing.
 		}
@@ -300,7 +302,7 @@ package org.pdfbox.tools
 		 * 
 		 * @throws IOException If there is any error writing to the stream.
 		 */
-		protected function endPage( page:PDFPage ) :void
+		protected function doEndPage( page:PDFPage ) :void
 		{
 			//default is to do nothing
 		}
@@ -309,7 +311,7 @@ package org.pdfbox.tools
 		 * This will print the text to the output stream.
 		 *
 		 * @throws IOException If there is an error writing the text.
-		 */
+		 *
 		protected function flushText() :void
 		{
 			var currentY:Number = -1;
@@ -423,7 +425,7 @@ package org.pdfbox.tools
 					}
 					lastProcessedCharacter = position;
 				}
-				*/
+				*
 				endParagraph();
 			}
 			
@@ -456,7 +458,7 @@ package org.pdfbox.tools
 		 */
 		private function within( first:Number, second:Number, variance:Number ):Boolean
 		{
-			return second > first - variance && second < first + variance;
+			return second > (first - variance) && second < (first + variance);
 		}
 
 		/**
@@ -465,7 +467,7 @@ package org.pdfbox.tools
 		 *
 		 * @param text The description of the character to display.
 		 */
-		protected function showCharacter( text:TextPosition ):void
+		override protected function showCharacter( text:TextPosition ):void
 		{
 			var showCharacter:Boolean = true;
 			if( suppressDuplicateOverlappingText )
@@ -533,10 +535,10 @@ package org.pdfbox.tools
 				{
 					for( i=0; i<pageArticles.size() && foundArticleDivisionIndex == -1; i++ )
 					{
-						PDThreadBead bead = (PDThreadBead)pageArticles.get( i );
+						var bead:PDFThreadBead = pageArticles.get( i ) as PDFThreadBead;
 						if( bead != null )
 						{
-							PDRectangle rect = bead.getRectangle();
+							var rect:PDFRectangle = bead.getRectangle();
 							if( rect.contains( x, y ) )
 							{
 								foundArticleDivisionIndex = i*2+1;
@@ -568,7 +570,7 @@ package org.pdfbox.tools
 				{
 					foundArticleDivisionIndex = 0;
 				}
-				int articleDivisionIndex = -1;
+				var articleDivisionIndex:int = -1;
 				if( foundArticleDivisionIndex != -1 )
 				{
 					articleDivisionIndex = foundArticleDivisionIndex;
@@ -589,7 +591,7 @@ package org.pdfbox.tools
 				{
 					articleDivisionIndex = charactersByArticle.size()-1;
 				}
-				List textList = (List) charactersByArticle.get( articleDivisionIndex );
+				var textList:List = charactersByArticle.get( articleDivisionIndex ) as List;
 				textList.add( text );
 			}
 		}
@@ -672,9 +674,9 @@ package org.pdfbox.tools
 		 * 
 		 * @return If the text will be grouped by beads.
 		 */
-		public function shouldSeparateByBeads():Boolean
+		public function get shouldSeparateByBeads():Boolean
 		{
-			return shouldSeparateByBeads;
+			return _shouldSeparateByBeads;
 		}
 		
 		/**
@@ -682,9 +684,9 @@ package org.pdfbox.tools
 		 * 
 		 * @param aShouldSeparateByBeads The new grouping of beads.
 		 */
-		public function setShouldSeparateByBeads( aShouldSeparateByBeads:Boolean ):void
+		public function set shouldSeparateByBeads( aShouldSeparateByBeads:Boolean ):void
 		{
-			this.shouldSeparateByBeads = aShouldSeparateByBeads;
+			this._shouldSeparateByBeads = aShouldSeparateByBeads;
 		}
 		
 		/**

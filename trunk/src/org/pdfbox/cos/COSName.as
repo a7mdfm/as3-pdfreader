@@ -485,7 +485,7 @@ package org.pdfbox.cos
 		/**
 		 * {@inheritDoc}
 		 */
-		public function equals( o:Object):Boolean{
+		override public function equals( o:Object):Boolean{
 			var retval:Boolean = this == o;
 			if( !retval && o is COSName )
 			{

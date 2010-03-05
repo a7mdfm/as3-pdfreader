@@ -29,9 +29,14 @@ package org.pdfbox.cos
 			return this;
 		}
 
-		public function accept( visitor:ICOSVisitor ):Object {
-			//
+		public function accept( visitor:ICOSVisitor ):Object
+		{
 			return null;
+		}
+		
+		public  function equals(o:Object):Boolean
+		{
+			return o == this;
 		}
 	}
 }

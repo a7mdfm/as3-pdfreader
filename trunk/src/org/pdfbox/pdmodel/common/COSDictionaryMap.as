@@ -8,7 +8,7 @@ package org.pdfbox.pdmodel.common
 	import org.pdfbox.cos.COSInteger;
 	import org.pdfbox.cos.COSName;
 	import org.pdfbox.cos.COSString;
-	
+	import org.pdfbox.utils.HashMap;
 	import org.pdfbox.utils.Map;
 
 
@@ -30,7 +30,7 @@ package org.pdfbox.pdmodel.common
 	     * @param actualsMap The map with standard java objects as values.
 	     * @param dicMap The map with COSBase objects as values.
 	     */
-	    public function COSDictionaryMap( Map actualsMap, COSDictionary dicMap )
+	    public function COSDictionaryMap( actualsMap:Map, dicMap:COSDictionary )
 	    {
 			actuals = actualsMap;
 			map = dicMap;
@@ -60,6 +60,11 @@ package org.pdfbox.pdmodel.common
 	    {
 			return map.keyList().contains( key );
 	    }
+		
+		public function getKeySet():Array
+		{
+			return map.keyList();
+		}
 
 	    /**
 	     * {@inheritDoc}
@@ -80,20 +85,20 @@ package org.pdfbox.pdmodel.common
 	    /**
 	     * {@inheritDoc}
 	     */
-	    public function put(Object key, Object value):Object
+	    public function put(key:Object, value:Object):Object
 	    {
-			COSObjectable object = (COSObjectable)value;
+			var object:COSObjectable = value as COSObjectable;
 
-			map.setItem( COSName.getPDFName( (String)key ), object.getCOSObject() );
+			map.setItem( COSName.getPDFName(key as String), object.getCOSObject() );
 			return actuals.put( key, value );
 	    }
 
 	    /**
 	     * {@inheritDoc}
 	     */
-	    public Object remove(Object key)
+	    public function remove(key:Object):Object
 	    {
-			map.removeItem( COSName.getPDFName( (String)key ) );
+			map.removeItem( COSName.getPDFName( key as String ) );
 			return actuals.remove( key );
 	    }
 
@@ -105,20 +110,28 @@ package org.pdfbox.pdmodel.common
 			map.clear();
 			actuals.clear();
 	    }
+
 	    /**
 	     * {@inheritDoc}
 	     */
-	    public boolean equals(Object o)
+	    public function equals(o:Object):Boolean
 	    {
-			boolean retval = false;
-			if( o instanceof COSDictionaryMap )
+			var retval:Boolean = false;
+			if( o is COSDictionaryMap )
 			{
-				COSDictionaryMap other = (COSDictionaryMap)o;
+				var other:COSDictionaryMap = o as COSDictionaryMap;
 				retval = other.map.equals( this.map );
 			}
 			return retval;
 	    }
 
+	    /**
+	     * {@inheritDoc}
+	     *
+	    public function toString():String
+	    {
+			return actuals.toString();
+	    }*/
 
 	    /**
 	     * This will take a map&lt;java.lang.String,org.pdfbox.pdmodel.COSObjectable&gt;
@@ -128,17 +141,17 @@ package org.pdfbox.pdmodel.common
 	     *
 	     * @return A proper COSDictionary
 	     */
-	    public static COSDictionary convert( Map someMap )
+	    public static function convert( someMap:Map ):COSDictionary
 	    {
-		Iterator iter = someMap.keySet().iterator();
-		COSDictionary dic = new COSDictionary();
-		while( iter.hasNext() )
-		{
-		    String name = (String)iter.next();
-		    COSObjectable object = (COSObjectable)someMap.get( name );
-		    dic.setItem( COSName.getPDFName( name ), object.getCOSObject() );
-		}
-		return dic;
+			var keys:Array = someMap.getKeySet();
+			var dic:COSDictionary = new COSDictionary();
+			for (var i:uint = 0, len:uint = keys.length; i < len;i++)
+			{
+				var name:String =  keys[i] as String;
+				var object:COSObjectable = someMap.get( keys ) as COSObjectable;
+				dic.setItem( COSName.getPDFName( name ), object.getCOSObject() );
+			}
+			return dic;
 	    }
 	    
 	    /**
@@ -149,48 +162,48 @@ package org.pdfbox.pdmodel.common
 	     * @return A standard java map.
 	     * @throws IOException If there is an error during the conversion.
 	     */
-	    public static COSDictionaryMap convertBasicTypesToMap( COSDictionary map ) throws IOException
+	    public static function convertBasicTypesToMap( map:COSDictionary ) :COSDictionaryMap
 	    {
-		COSDictionaryMap retval = null;
-		if( map != null )
-		{
-		    Map actualMap = new HashMap();
-		    Iterator keyIter = map.keyList().iterator();
-		    while( keyIter.hasNext() )
-		    {
-			COSName key = (COSName)keyIter.next();
-			COSBase cosObj = map.getDictionaryObject( key );
-			Object actualObject = null;
-			if( cosObj instanceof COSString )
+			var retval:COSDictionaryMap = null;
+			if( map != null )
 			{
-			    actualObject = ((COSString)cosObj).getString();
+				var actualMap:HashMap = new HashMap();
+				var keys:Array = map.keyList();
+				for (var i:uint = 0, len:uint = keys.length; i < len;i++)
+				{
+					var key:COSName = keys[i] as COSName;
+					var cosObj:COSBase = map.getDictionaryObject( key );
+					var actualObject:Object = null;
+					if( cosObj is COSString )
+					{
+						actualObject = (cosObj as COSString).getString();
+					}
+					else if( cosObj is COSInteger )
+					{
+						actualObject = (cosObj as COSInteger).intValue();
+					}
+					else if( cosObj is COSName )
+					{
+						actualObject = (cosObj as COSName).getName();
+					}
+					else if( cosObj is COSFloat )
+					{
+						actualObject = (cosObj as COSInteger).floatValue();
+					}
+					else if( cosObj is COSBoolean )
+					{
+						actualObject = (cosObj as COSBoolean).getValue() ? true : false;
+					}
+					else
+					{
+						throw new Error( "Error:unknown type of object to convert:" + cosObj );
+					}
+					actualMap.put( key.getName(), actualObject );
+				}
+				retval = new COSDictionaryMap( actualMap, map );
 			}
-			else if( cosObj instanceof COSInteger )
-			{
-			    actualObject = new Integer( ((COSInteger)cosObj).intValue() );
-			}
-			else if( cosObj instanceof COSName )
-			{
-			    actualObject = ((COSName)cosObj).getName();
-			}
-			else if( cosObj instanceof COSFloat )
-			{
-			    actualObject = new Float( ((COSInteger)cosObj).floatValue() );
-			}
-			else if( cosObj instanceof COSBoolean )
-			{
-			    actualObject = ((COSBoolean)cosObj).getValue() ? Boolean.TRUE : Boolean.FALSE;
-			}
-			else
-			{
-			    throw new IOException( "Error:unknown type of object to convert:" + cosObj );
-			}
-			actualMap.put( key.getName(), actualObject );
-		    }
-		    retval = new COSDictionaryMap( actualMap, map );
-		}
-		
-		return retval;
+			
+			return retval;
 	    }
 	}
 }

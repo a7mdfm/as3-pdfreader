@@ -3,7 +3,6 @@ package org.pdfbox.operator{
 
 	import org.pdfbox.cos.COSFloat;
 	import org.pdfbox.cos.COSNumber;
-	import org.pdfbox.utils.ArrayList;
 	import org.pdfbox.utils.PDFOperator;
 
 	/**
@@ -31,8 +30,8 @@ package org.pdfbox.operator{
 			//move text position and set leading
 			var y:COSNumber = arguments.get( 1 ) as COSNumber;
 			
-			var args:ArrayList = new ArrayList();
-			args.add(new COSFloat(-1*y.floatValue()));
+			var args:Array = new Array();
+			args.push(new COSFloat(-1*y.floatValue()));
 			context.processOperator("TL", args);
 			context.processOperator("Td", arguments);
 

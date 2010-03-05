@@ -46,6 +46,11 @@
 				return false;
 			}
 			
+			public function equals(o:Object):Boolean
+			{
+				return false;
+			}
+			
 			/*
 			 *  find element by key
 			 *  

@@ -82,6 +82,41 @@ package org.pdfbox.pdmodel.font
 			}
 		   
 		}
+		
+		public function getType():String
+		{
+			return font.getNameAsString( COSName.TYPE );
+		}
+		
+		/**
+		 * This will get the subtype of font, Type1, Type3, ...
+		 * 
+		 * @return The type of font that this is.
+		 */
+		public function getSubType():String
+		{
+			return font.getNameAsString( COSName.SUBTYPE );
+		}
+		
+		/**
+		 * The PostScript name of the font.
+		 * 
+		 * @return The postscript name of the font.
+		 */
+		public function getBaseFont():String
+		{
+			return font.getNameAsString( COSName.BASE_FONT );
+		}
+		
+		/**
+		 * Set the PostScript name of the font.
+		 * 
+		 * @param baseFont The postscript name for the font.
+		 */
+		public function setBaseFont( baseFont:String ):void
+		{
+			font.setName( COSName.BASE_FONT, baseFont );
+		}
 
 		/**
 		 * {@inheritDoc}

@@ -73,7 +73,7 @@ package org.pdfbox.cos
 		/**
 		 * {@inheritDoc}
 		 */
-		public function equals( o:Object):Boolean{
+		override public function equals( o:Object):Boolean{
 			return o is COSFloat && COSFloat(o).floatValue() == floatValue();
 		}
 
