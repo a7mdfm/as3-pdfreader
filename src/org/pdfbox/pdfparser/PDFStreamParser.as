@@ -83,19 +83,17 @@ package org.pdfbox.pdfparser
 		 * @throws IOException If an io error occurs while parsing the stream.
 		 */
 		private function parseNextToken():Object
-		{
+		{			
 			var retval:Object = null;
-						
-			var nextByte:int = pdfSource.peek();
-			if( isNaN(nextByte) )
+			skipSpaces();	
+			var nextByte:Number = pdfSource.peek();
+			if ( isNaN(nextByte) || pdfSource.isEOF() )
 			{
 				return null;
 			}
-			skipSpaces();
 			
 			var c:String = String.fromCharCode(nextByte);
 			var next:String;
-			
 			switch(c)
 			{
 				case '<':
@@ -325,7 +323,7 @@ package org.pdfbox.pdfparser
 		protected function readOperator():String
 		{
 			skipSpaces();
-
+			
 			//average string size is around 2 and the normal string buffer size is
 			//about 16 so lets save some space.
 			var buffer:String = '';

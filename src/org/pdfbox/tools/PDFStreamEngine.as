@@ -115,7 +115,7 @@ package org.pdfbox.tools
 					var op:OperatorProcessor = props[prop] as OperatorProcessor;
 					//trace(op);
 					if ( op ) {
-						var op:OperatorProcessor = new cls() as OperatorProcessor;
+						//var op:OperatorProcessor = new cls() as OperatorProcessor;
 						//trace('op');
 						registerOperatorProcessor(prop, op);
 					}
@@ -183,7 +183,7 @@ package org.pdfbox.tools
 			if( resources != null )
 			{
 				var sr:StreamResources = new StreamResources();
-				//sr.fonts = resources.getFonts( documentFontCache );
+				sr.fonts = resources.getFonts( documentFontCache ) as HashMap;
 				//sr.colorSpaces = resources.getColorSpaces();
 				//sr.xobjects = resources.getXObjects();
 				//sr.graphicsStates = resources.getGraphicsStates();
@@ -194,7 +194,6 @@ package org.pdfbox.tools
 			{
 				var arguments:Array = new Array();
 				var tokens:Array = cosStream.getStreamTokens();
-				//trace("tokens:" + tokens);
 				if( tokens != null )
 				{
 					for ( var i:int = 0, len:int = tokens.length; i < len; i++)
@@ -429,10 +428,10 @@ package org.pdfbox.tools
 		 *
 		 * @throws IOException If there is an error processing the operation.
 		 */
-		public function $processOperator( operation:String, arguments:Array ):void
+		public function $processOperator( operation:String, args:Array ):void
 		{
 			var oper:PDFOperator = PDFOperator.getOperator( operation );
-			processOperator( oper, arguments );
+			processOperator( oper, args );
 		}
 
 		/**
@@ -443,13 +442,21 @@ package org.pdfbox.tools
 		 *
 		 * @throws IOException If there is an error processing the operation.
 		 */
-		public function processOperator( operator:Object, arguments:Array ) :void
+		public function processOperator( oper:Object, args:Array ) :void
 		{
-			var operation:String = operator.getOperation();
+			var operation:String;
+			var operator:PDFOperator;
+			if ( oper is PDFOperator ) { 
+				operator = oper as PDFOperator;
+				operation = operator.getOperation();
+			}else {
+				$processOperator(oper as String, args);
+				return;
+			}
 			var processor:OperatorProcessor = operators.get( operation ) as OperatorProcessor;
 			if( processor != null )
 			{
-				processor.process( operator, arguments );
+				processor.process( operator, args );
 			}
 		} 
 	   
@@ -528,7 +535,7 @@ package org.pdfbox.tools
 		/**
 		 * @param value The graphicsStates to set.
 		 */
-		public function setGraphicsStates(value:HashMap) 
+		public function setGraphicsStates(value:HashMap):void 
 		{
 			(streamResourcesStack.peek() as StreamResources).graphicsStates = value;
 		}
@@ -563,10 +570,10 @@ package org.pdfbox.tools
 		/**
 		 * @return Returns the resources.
 		 */
-		/*public PDResources getResources()
+		public function getResources():PDFResources
 		{
-			return ((StreamResources) streamResourcesStack.peek()).resources;
-		}*/
+			return (streamResourcesStack.peek() as StreamResources).resources;
+		}
 		
 		/**
 		 * Get the current page that is being processed.

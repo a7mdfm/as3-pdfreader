@@ -207,10 +207,10 @@
 			for (var i:int = 0; i < len; i++) {
 				var page:PDFPage = pages[i] as PDFPage;
 				var stream:PDFStream = page.getContents();
-				var bytes:ByteArray = stream.getByteArray();
-				PDFLogger.log ("Page " + (i + 1) + " : " + bytes);
-				//var pdfStreamEngine:PDFStreamEngine = new PDFStreamEngine();
-				//pdfStreamEngine.processStream(page, null, stream.getStream());
+				//var bytes:ByteArray = stream.getByteArray();
+				//PDFLogger.log ("Page " + (i + 1) + " : " + bytes);
+				var pdfStreamEngine:PDFStreamEngine = new PDFStreamEngine();
+				pdfStreamEngine.processStream(page, page.findResources(), stream.getStream());
 			}
 			
 			
@@ -218,7 +218,7 @@
 			/*
 			var stripper:PDFTextStripper = new PDFTextStripper();
 			var output:ByteArray = new ByteArray();
-			stripper.setSortByPosition( sort );
+			stripper.setSortByPosition( true );
 			stripper.setStartPage( 1 );
 			stripper.setEndPage( 1 );
 			stripper.writeText( document, output );

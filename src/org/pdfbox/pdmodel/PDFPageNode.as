@@ -189,7 +189,7 @@ package org.pdfbox.pdmodel
 	     * This will return null if no resources are available at this level.
 	     *
 	     * @return The resources at this level in the hierarchy.
-	     *
+	     */
 	    public function getResources():PDFResources
 	    {
 			return null;
@@ -200,11 +200,11 @@ package org.pdfbox.pdmodel
 	     * it finds them.
 	     *
 	     * @return The resources at this level in the hierarchy.
-	     *
-	    public function findResources():PDResources
+	     */
+	    public function findResources():PDFResources
 	    {
-			PDResources retval = getResources();
-			PDFPageNode parent = getParent();
+			var retval:PDFResources = getResources();
+			var parent:PDFPageNode = getParent();
 			if( retval == null && parent != null )
 			{
 				retval = parent.findResources();
@@ -212,23 +212,22 @@ package org.pdfbox.pdmodel
 			return retval;
 	    }
 
-	    **
+	    /**
 	     * This will set the resources for this page.
 	     *
 	     * @param resources The new resources for this page.
-	     *
-	    public void setResources( PDResources resources )
+	     */
+	    public function setResources( resources:PDFResources ):void
 	    {
-		if( resources == null )
-		{
-		    page.removeItem( COSName.RESOURCES );
-		}
-		else
-		{
-		    page.setItem( COSName.RESOURCES, resources.getCOSDictionary() );
-		}
-	    }
-		*/
+			if( resources == null )
+			{
+				page.removeItem( COSName.RESOURCES );
+			}
+			else
+			{
+				page.setItem( COSName.RESOURCES, resources.getCOSDictionary() );
+			}
+	    }		
 
 	    /**
 	     * This will get the MediaBox at this page and not look up the hierarchy.

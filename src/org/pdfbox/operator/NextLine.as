@@ -1,7 +1,6 @@
 package org.pdfbox.operator{
 
 	import org.pdfbox.cos.COSFloat;
-	import org.pdfbox.utils.ArrayList;
 	import org.pdfbox.utils.PDFOperator;
 
 	/**
@@ -25,11 +24,11 @@ package org.pdfbox.operator{
 		 */
 		override public function process( operator:PDFOperator, arguments:Array):void {
 			//move to start of next text line
-			var args:ArrayList = new ArrayList();
-			args.add(new COSFloat(0.0));
+			var args:Array = new Array();
+			args.push(new COSFloat(0.0));
 			// this must be -leading instead of just leading as written in the 
 			// specification (p.369) the acrobat reader seems to implement it the same way
-			args.add(new COSFloat(-1*context.getGraphicsState().getTextState().getLeading()));
+			args.push(new COSFloat(-1*context.getGraphicsState().getTextState().getLeading()));
 			// use Td instead of repeating code
 			context.processOperator("Td", args);
 			

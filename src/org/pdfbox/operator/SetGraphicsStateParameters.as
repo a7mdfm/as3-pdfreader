@@ -25,7 +25,7 @@ package org.pdfbox.operator {
 		{
 			//set parameters from graphics state parameter dictionary
 			var graphicsName:COSName = arguments.get( 0 ) as COSName;
-			var gs:PDFExtendedGraphicsState = (context as PDFExtendedGraphicsState).getGraphicsStates().get( graphicsName.getName() );
+			var gs:PDFExtendedGraphicsState = (context.getGraphicsStates().get( graphicsName.getName())) as PDFExtendedGraphicsState;
 			gs.copyIntoGraphicsState( context.getGraphicsState() );
 		}
 	}

@@ -30,11 +30,11 @@ package org.pdfbox.operator{
 			//there are some documents that are incorrectly structured and 
 			//arguments are in the wrong spot, so we will silently ignore them
 			//if there are no arguments
-			if( arguments.size() >= 2 )
+			if( arguments.length >= 2 )
 			{
 				//set font and size
-				var fontName:COSName = arguments.get( 0 ) as COSName;
-				var fontSize:Number = (arguments.get( 1 ) as COSNumber ).floatValue();
+				var fontName:COSName = arguments[ 0 ] as COSName;
+				var fontSize:Number = (arguments[ 1 ] as COSNumber ).floatValue();
 				context.getGraphicsState().getTextState().setFontSize( fontSize );
 		
 				//old way
@@ -44,6 +44,7 @@ package org.pdfbox.operator{
 				//    graphicsState.getTextState().getFont() = (COSObject)graphicsState.getTextState().getFont()
 				//                                           Dictionary.getItem( fontName );
 				//}
+				trace(context.getFonts());
 				context.getGraphicsState().getTextState().setFont( context.getFonts().get( fontName.getName() ) as PDFont );
 				if( context.getGraphicsState().getTextState().getFont() == null )
 				{

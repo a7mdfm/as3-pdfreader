@@ -342,7 +342,7 @@ package org.pdfbox.cos
 		/**
 		 * {@inheritDoc}
 		 */
-		public function equals(obj:Object):Boolean{
+		override public function equals(obj:Object):Boolean{
 			return (obj is COSString) && COSString(obj).getBytes() == getBytes();
 		}
 

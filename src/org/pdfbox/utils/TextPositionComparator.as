@@ -26,6 +26,7 @@ package org.pdfbox.utils
 		 */
 		public function compare(o1:*, o2:*):int
 		{
+			return 0;
 			/*int retval = 0;
 			TextPosition pos1 = (TextPosition)o1;
 			TextPosition pos2 = (TextPosition)o2;

@@ -19,7 +19,7 @@
 		 * get the next byte and don't move the position
 		 * @return
 		 */
-		public function peek():int
+		public function peek():Number
 		{
 			if ( !this.bytesAvailable ) {
 				return NaN;
@@ -29,7 +29,7 @@
 			return result;
 		}
 		
-		public function read():int {
+		public function read():Number {
 			if ( !this.bytesAvailable ) {
 				return NaN;
 			}

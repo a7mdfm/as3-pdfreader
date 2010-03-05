@@ -89,7 +89,7 @@
 			if (pdfSource.isEOF()) {
 				return;
 			}
-			var c:int = pdfSource.read();
+			var c:Number = pdfSource.read();
 			if ( isNaN(c) ) {
 				return;
 			}
